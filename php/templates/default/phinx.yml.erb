@@ -1,0 +1,32 @@
+paths:
+    migrations: %%PHINX_CONFIG_DIR%%/migrations
+
+environments:
+    default_migration_table: phinxlog
+    default_database: development
+    production:
+        adapter: '<%= @database[:adapter] %>';
+        host: '<%= @database[:host] %>'
+        name: fit2you_data
+        user: '<%= @database[:username] %>'
+        pass: '<%= @database[:password] %>'
+        port: 3306
+        charset: utf8
+
+    development:
+        adapter: '<%= @database[:adapter] %>';
+        host: '<%= @database[:host] %>'
+        name: fit2you_data
+        user: '<%= @database[:username] %>'
+        pass: '<%= @database[:password] %>'
+        port: 3306
+        charset: utf8
+
+    testing:
+        adapter: '<%= @database[:adapter] %>';
+        host: '<%= @database[:host] %>'
+        name: fit2you_data
+        user: '<%= @database[:username] %>'
+        pass: '<%= @database[:password] %>'
+        port: 3306
+        charset: utf8

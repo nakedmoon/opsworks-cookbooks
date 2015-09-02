@@ -21,4 +21,56 @@ node[:deploy].each do |application, deploy|
       File.exists?("#{deploy[:deploy_to]}/shared/config")
     end
   end
+
+
+  # write out db.php
+  template "#{deploy[:deploy_to]}/shared/config/db.php" do
+    cookbook 'php'
+    source 'db.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :database => deploy[:database],
+        :current_dir => ::File.join(deploy[:deploy_to], 'current')
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  # write out configuration.php
+  template "#{deploy[:deploy_to]}/shared/config/configuration.php" do
+    cookbook 'php'
+    source 'configuration.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :database => deploy[:database],
+        :log_dir => ::File.join(deploy[:deploy_to], 'current', 'logs'),
+        :tmp_dir => ::File.join(deploy[:deploy_to], 'current', 'tmp')
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+
+  # write out phinx.yml
+  template "#{deploy[:deploy_to]}/shared/config/phinx.yml" do
+    cookbook 'php'
+    source 'phinx.yml.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :database => deploy[:database]
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+
 end
