@@ -34,11 +34,12 @@ node[:deploy].each do |application, deploy|
       action :run
     end
 
-    deploy[:database][:hyena_db_user][:ips].each do |ip|
+    instances_ips = node["layers"]["php-app"]["instances"].map{|i| i.fetch("private_ip")}
+    (instances_ips + deploy[:database][:hyena_db_user][:ips]).each do |ip|
       execute "grant all privileges on #{db} for user #{deploy[:database][:hyena_db_user][:username]}@#{ip}" do
         sql_users = Array.new.tap do |sql|
-          sql << "CREATE USER `#{deploy[:database][:hyena_db_user][:username]}`@`#{ip}` IDENTIFIED BY '#{deploy[:database][:hyena_db_user][:password]}';"
-          sql << "GRANT ALL ON #{db}.* TO `#{deploy[:database][:hyena_db_user][:username]}`@`#{ip}`;"
+          sql << "CREATE USER '#{deploy[:database][:hyena_db_user][:username]}'@'#{ip}' IDENTIFIED BY '#{deploy[:database][:hyena_db_user][:password]}';"
+          sql << "GRANT ALL ON #{db}.* TO '#{deploy[:database][:hyena_db_user][:username]}'@'#{ip}' IDENTIFIED BY '#{deploy[:database][:hyena_db_user][:password]}';"
         end.join
         command "#{mysql_command} -e '#{sql_users}' "
       end
