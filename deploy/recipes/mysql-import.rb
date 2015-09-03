@@ -36,7 +36,7 @@ node[:deploy].each do |application, deploy|
 
     deploy[:database][:hyena_db_user][:ips].each do |ip|
       execute "grant all privileges on #{db} for user #{deploy[:database][:hyena_db_user][:username]}@#{ip}" do
-        sql_users = Array.tap do |sql|
+        sql_users = Array.new.tap do |sql|
           sql << "CREATE USER `#{deploy[:database][:hyena_db_user][:username]}`@`#{ip}` IDENTIFIED BY '#{deploy[:database][:hyena_db_user][:password]}';"
           sql << "GRANT ALL ON #{db}.* TO `#{deploy[:database][:hyena_db_user][:username]}`@`#{ip}`;"
         end.join
