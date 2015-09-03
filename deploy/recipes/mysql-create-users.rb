@@ -16,7 +16,7 @@ node[:deploy].each do |application, deploy|
       level :info
     end
 
-    instances_ips = node[:opsworks][:layers]["php-app"][:instances].map{|i| i.fetch("private_ip")}
+    instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}
     (instances_ips + deploy[:database][:hyena_db_user][:ips]).each do |ip|
       execute "grant all privileges on #{db} for user #{deploy[:database][:hyena_db_user][:username]}@#{ip}" do
         sql_users = Array.new.tap do |sql|
