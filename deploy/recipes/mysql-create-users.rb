@@ -18,22 +18,16 @@ node[:deploy].each do |application, deploy|
         sql_users = Array.new.tap do |sql|
           sql << "GRANT USAGE ON *.* TO '#{current_user}'@'#{ip}';"
           sql << "DROP USER '#{current_user}'@'#{ip}';"
+          sql << "FLUSH PRIVILEGES;"
           sql << "CREATE USER '#{current_user}'@'#{ip}' IDENTIFIED BY '#{current_password}';"
           sql << "GRANT ALL ON #{db}.* TO '#{current_user}'@'#{ip}' IDENTIFIED BY '#{current_password}';"
+          sql << "FLUSH PRIVILEGES;"
         end.join
         command "#{mysql_command} -e \"#{sql_users}\" "
       end
     end
 
   end
-
-  execute "flush privileges" do
-    command "#{mysql_command} -e 'FLUSH PRIVILEGES;' "
-    action :run
-  end
-
-
-
 
 
 end
