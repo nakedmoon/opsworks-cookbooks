@@ -153,7 +153,10 @@ define :opsworks_deploy do
             owner node[:deploy][application][:user]
             group node[:deploy][application][:group]
             variables(
-                :database => deploy[:database]
+                :database => deploy[:database],
+                :current_dir => ::File.join(deploy[:deploy_to], 'current'),
+                :env => node[:hyena_env] || :development,
+                :rollbar_token => node[:rollbar_token]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

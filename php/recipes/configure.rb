@@ -32,7 +32,9 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :current_dir => ::File.join(deploy[:deploy_to], 'current')
+        :current_dir => ::File.join(deploy[:deploy_to], 'current'),
+        :env => node[:hyena_env] || :development,
+        :rollbar_token => node[:rollbar_token]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
