@@ -12,11 +12,11 @@ node[:deploy].each do |application, deploy|
   end
 
   log "check environment" do
-    message "Hyena Environment: #{ENV['HYENA_ENV']}"
+    message "Hyena Environment: #{node[:hyena_env]}"
     level :info
   end
 
-  php_env = :development if ENV['HYENA_ENV'].nil? || ENV['HYENA_ENV'].blank?
+  php_env = node[:hyena_env] || :development
   
   execute "migrate db with phinx" do
     cwd deploy[:current_path]
