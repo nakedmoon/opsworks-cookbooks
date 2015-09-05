@@ -153,8 +153,15 @@ define :opsworks_deploy do
             owner node[:deploy][application][:user]
             group node[:deploy][application][:group]
             variables(
-                :database => deploy[:database],
-                :current_dir => ::File.join(deploy[:deploy_to], 'current'),
+                :database => node[:deploy][application][:database],
+                :current_dir => node[:deploy][application][:current_path],
+                :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
+                                            'vendor',
+                                            'rollbar',
+                                            'rollbar',
+                                            'src',
+                                            'rollbar.php'
+                ),
                 :env => node[:hyena_env] || :development,
                 :rollbar_token => node[:rollbar_token]
             )
@@ -170,8 +177,8 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :database => deploy[:database],
-                :log_dir => ::File.join(node[:deploy][application][:deploy_to], 'current', 'logs'),
-                :tmp_dir => ::File.join(node[:deploy][application][:deploy_to], 'current', 'tmp')
+                :log_dir => ::File.join(node[:deploy][application][:current_path], 'logs'),
+                :tmp_dir => ::File.join(node[:deploy][application][:current_path], 'tmp')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
