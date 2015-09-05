@@ -16,7 +16,7 @@ node[:deploy].each do |application, deploy|
     level :info
   end
 
-  php_env = ENV['HYENA_ENV'] || :development
+  php_env = :development if ENV['HYENA_ENV'].nil? || ENV['HYENA_ENV'].blank?
   
   execute "migrate db with phinx" do
     cwd deploy[:current_path]
