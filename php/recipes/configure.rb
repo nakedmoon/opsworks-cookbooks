@@ -35,7 +35,8 @@ node[:deploy].each do |application, deploy|
         :current_dir => deploy[:current_path],
         :roolbar_lib => ::File.join(deploy[:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
         :env => node[:hyena_env] || :development,
-        :rollbar_token => node[:rollbar_token]
+        :rollbar_token => node[:rollbar_token],
+        :rollbar_branch => deploy[:scm][:revision]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

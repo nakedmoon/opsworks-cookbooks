@@ -5,7 +5,9 @@
     $config = array(
         'access_token' => '<%= @rollbar_token %>',
         'environment' => '<%= @env %>',
-        'root' => '<%= @current_dir %>'
+        'root' => '<%= @current_dir %>',
+        'branch' => '<%= @rollbar_branch %>',
+        'included_errno' => E_ERROR
     );
 
     Rollbar::init($config);
