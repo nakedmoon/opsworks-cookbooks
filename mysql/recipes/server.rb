@@ -41,9 +41,9 @@ end
 include_recipe 'mysql::ebs' if infrastructure_class?('ec2')
 include_recipe 'mysql::config'
 
-service "mysql" do
-  action :start
-end
+# service "mysql" do
+#   action :start
+# end
 
 if platform?('centos','redhat','fedora','amazon')
   execute 'assign root password' do
