@@ -26,7 +26,7 @@ node[:deploy].each do |application, deploy|
     end
 
     execute "create database #{db}" do
-      command "mysql -uroot -p -e 'CREATE DATABASE `#{db}`' "
+      command "#{mysql_command} -e 'CREATE DATABASE `#{db}`' "
       action :run
     end
 
