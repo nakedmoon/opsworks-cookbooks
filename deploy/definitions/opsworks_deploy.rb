@@ -146,6 +146,19 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/wp-config.php" do
+            cookbook 'php'
+            source 'wp-config.php.erb'
+            mode '0660'
+            owner node[:deploy][application][:user]
+            group node[:deploy][application][:group]
+            variables(
+                :database => node[:deploy][application][:database]
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
             OpsWorks::NodejsConfiguration.npm_install(application, node[:deploy][application], release_path, node[:opsworks_nodejs][:npm_install_options])
