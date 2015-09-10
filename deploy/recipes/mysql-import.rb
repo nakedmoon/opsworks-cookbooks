@@ -12,7 +12,7 @@ node[:deploy].each do |application, deploy|
     command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{deploy[:database][:root_password]}');\""
   end
 
-  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}'"
+  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}"
 
 
   node[:mysql_import][:databases].each do |origin, db|
