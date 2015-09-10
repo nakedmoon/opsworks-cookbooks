@@ -6,7 +6,7 @@ Chef::Log.level = :debug
 node[:deploy].each do |application, deploy|
   next if deploy[:database].nil? || deploy[:database].empty?
 
-  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}'"
+  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}"
 
   current_user = deploy[:database][:wp_db_user]
   current_password = deploy[:database][:wp_db_password]
