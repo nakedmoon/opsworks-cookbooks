@@ -8,11 +8,7 @@ node[:deploy].each do |application, deploy|
 
   mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --add-drop-table --skip-lock-tables %s | %s %s"
 
-  execute "root password" do
-    command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{deploy[:database][:root_password]}');\""
-  end
-
-  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}"
+  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{node[:mysql][:root_password]}"
 
 
   node[:mysql_import][:databases].each do |origin, db|

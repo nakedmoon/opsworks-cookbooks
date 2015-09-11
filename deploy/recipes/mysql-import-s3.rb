@@ -6,7 +6,7 @@ Chef::Log.level = :debug
 node[:deploy].each do |application, deploy|
   next if deploy[:database].nil? || deploy[:database].empty?
 
-  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{deploy[:database][:root_password]}"
+  mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{node[:mysql][:root_password]}"
 
   node[:mysql_import][:databases].each do |origin, db|
     execute "drop database #{db}" do
