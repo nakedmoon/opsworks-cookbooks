@@ -17,3 +17,7 @@ end
 service "mysql" do
   action :start
 end
+
+execute "root password" do
+  command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{deploy[:database][:root_password]}');\""
+end
