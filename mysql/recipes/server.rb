@@ -52,3 +52,8 @@ if platform?('centos','redhat','fedora','amazon')
     only_if "#{node[:mysql][:mysql_bin]} -u root -e 'show databases;'"
   end
 end
+
+execute "root password" do
+  command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{deploy[:database][:root_password]}');\""
+end
+
