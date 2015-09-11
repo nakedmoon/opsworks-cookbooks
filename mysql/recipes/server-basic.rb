@@ -19,5 +19,5 @@ service "mysql" do
 end
 
 execute "root password" do
-  command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{deploy[:database][:root_password]}');\""
+  command "mysql -uroot -e \"SET PASSWORD=PASSWORD('#{node[:deploy][application][:database][:root_password]}');\""
 end
