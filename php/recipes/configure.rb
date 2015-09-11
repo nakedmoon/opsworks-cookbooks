@@ -30,7 +30,8 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :database => deploy[:database]
+        :database => deploy[:database],
+        :wp => deploy[:wp]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
