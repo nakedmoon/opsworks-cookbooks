@@ -4,7 +4,6 @@ include_recipe 'deploy'
 Chef::Log.level = :debug
 
 node[:deploy].each do |application, deploy|
-  next if deploy[:database].nil? || deploy[:database].empty?
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{node[:mysql][:root_password]}"
 
