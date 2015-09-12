@@ -32,7 +32,11 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :current_dir => ::File.join(deploy[:deploy_to], 'current')
+        :current_dir => deploy[:current_path],
+        :roolbar_lib => ::File.join(deploy[:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
+        :env => node[:hyena_env] || :development,
+        :rollbar_token => node[:rollbar_token],
+        :rollbar_branch => deploy[:scm][:revision]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -48,8 +52,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :log_dir => ::File.join(deploy[:deploy_to], 'current', 'logs'),
-        :tmp_dir => ::File.join(deploy[:deploy_to], 'current', 'tmp')
+        :log_dir => ::File.join(deploy[:current_path], 'logs'),
+        :tmp_dir => ::File.join(deploy[:current_path], 'tmp')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

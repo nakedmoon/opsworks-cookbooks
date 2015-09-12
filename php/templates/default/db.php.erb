@@ -1,5 +1,17 @@
 <?php
 
+    require_once '<%= @roolbar_lib %>';
+
+    $config = array(
+        'access_token' => '<%= @rollbar_token %>',
+        'environment' => '<%= @env %>',
+        'root' => '<%= @current_dir %>',
+        'branch' => '<%= @rollbar_branch %>',
+        'included_errno' => E_ERROR
+    );
+
+    Rollbar::init($config);
+
     $hyenaServer = '<%= @database[:host] %>';
     $hyenaDb       = '<%= @database[:hyenadb] %>';
     $joomlaDb       = '<%= @database[:joomladb] %>';
