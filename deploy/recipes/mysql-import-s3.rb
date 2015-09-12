@@ -35,7 +35,7 @@ node[:deploy].each do |application, deploy|
 
 
     log "#{db} import message" do
-      message "Database #{db} imported from s3://fit2youdumps/#{db}.sql.gz"
+      message "Database #{db} imported from s3://#{node[:mysql_import][:s3_bucket]}/#{db}.sql.gz"
       level :info
     end
 
