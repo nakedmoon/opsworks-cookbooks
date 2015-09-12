@@ -7,10 +7,10 @@ node[:deploy].each do |application, deploy|
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{node[:mysql][:root_password]}"
 
-  current_user = deploy[:database][:wp_db_user]
-  current_password = deploy[:database][:wp_db_password]
+  current_user = deploy[:wp][:db_user]
+  current_password = deploy[:wp][:db_password]
   instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}
-  user_ips = instances_ips.push(*deploy[:database][:wp_db_user_ips]).unshift('localhost')
+  user_ips = instances_ips.push(*deploy[:wp][:user_ips]).unshift('localhost')
   user_ips.each do |ip|
     execute "create user #{current_user}@#{ip}" do
       sql_user = Array.new.tap do |sql|
