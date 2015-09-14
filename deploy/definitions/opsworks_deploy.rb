@@ -223,4 +223,9 @@ define :opsworks_deploy do
   bash "permission on widget cache directory #{node[:deploy][application][:deploy_to]}/current/wp-content/plugins/widgetkit/cache" do
     code "chmod 755 #{node[:deploy][application][:deploy_to]}/current/wp-content/plugins/widgetkit/cache"
   end
+
+  bash "permission on widget cache directory #{node[:deploy][application][:deploy_to]}/current/wp-content/themes/yoo_unity_wp/cache" do
+    code "chmod 755 #{node[:deploy][application][:deploy_to]}/current/wp-content/themes/yoo_unity_wp/cache"
+  end
+  
 end

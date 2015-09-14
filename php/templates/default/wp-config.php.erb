@@ -15,8 +15,13 @@
  */
 
 //** WP Domain ** //
-define('WP_HOME','<%=  @wp[:home] %>');
-define('WP_SITEURL','<%=  @wp[:siteurl] %>');
+<% unless @wp[:home].nil? %>
+    define('WP_HOME','<%=  @wp[:home] %>');
+<% end %>
+
+<% unless @wp[:siteurl].nil? %>
+    define('WP_SITEURL','<%=  @wp[:siteurl] %>');
+<% end %>
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
@@ -29,7 +34,7 @@ define('DB_USER', '<%=  @wp[:db_user] %>');
 define('DB_PASSWORD', '<%=  @wp[:db_password] %>');
 
 /** MySQL hostname */
-define('DB_HOST', 'localhost');
+define('DB_HOST', '<%=  @wp[:db_host] || 'localhost' %>');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
