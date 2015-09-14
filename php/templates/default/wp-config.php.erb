@@ -14,12 +14,14 @@
  * @package WordPress
  */
 
-//** WP Domain ** //
+
 <% unless @wp[:home].nil? %>
+    //** WP Home ** //
     define('WP_HOME','<%=  @wp[:home] %>');
 <% end %>
 
 <% unless @wp[:siteurl].nil? %>
+    //** WP Siteurl ** //
     define('WP_SITEURL','<%=  @wp[:siteurl] %>');
 <% end %>
 
