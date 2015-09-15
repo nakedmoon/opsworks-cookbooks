@@ -6,6 +6,8 @@ Chef::Log.level = :debug
 node[:deploy].each do |application, deploy|
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u #{deploy[:database][:username]} #{node[:mysql][:server_root_password].blank? ? '' : "-p#{node[:mysql][:server_root_password]}"}"
+  mysql_definer_filter = "sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/'"
+
 
   node[:mysql_import][:databases].each do |origin, db|
     execute "drop database #{db}" do
@@ -27,7 +29,7 @@ node[:deploy].each do |application, deploy|
       s3_cmds = []
       s3_cmds << "sudo aws s3 cp s3://#{node[:mysql_import][:s3_bucket]}/#{db}.sql.gz ."
       s3_cmds << "sudo gzip -d #{db}.sql.gz"
-      s3_cmds << "#{mysql_command} #{db} < #{db}.sql"
+      s3_cmds << "cat #{db}.sql | #{mysql_definer_filter} | #{mysql_command} #{db} < #{db}.sql"
       s3_cmds << "sudo rm -f #{db}.sql"
       command s3_cmds.join(";")
       action :run
