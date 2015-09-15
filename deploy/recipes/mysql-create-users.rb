@@ -36,6 +36,14 @@ node[:deploy].each do |application, deploy|
   end
 
 
+  ['uploads','plugins','plugins/widgetkit/cache','themes/yoo_unity_wp/cache'].each do |d|
+    dir = File.join(node[:deploy][application][:deploy_to], 'current', 'wp-content')
+    execute "chmodding 755 directory #{dir}" do
+      command "chmod 755 #{dir}"
+    end
+  end
+
+
 end
 
 
