@@ -5,13 +5,13 @@ Chef::Log.level = :debug
 
 node[:deploy].each do |application, deploy|
 
-  mysql_command = "#{node[:mysql][:mysql_bin]} -u #{deploy[:database][:username]} #{node[:mysql][:server_root_password].blank? ? '' : "-p#{node[:mysql][:server_root_password]}"}"
+  mysql_command = "#{node[:mysql][:mysql_bin]} -h #{deploy[:database][:host]} -u #{deploy[:database][:username]} #{node[:mysql][:server_root_password].blank? ? '' : "-p#{node[:mysql][:server_root_password]}"}"
 
 
   current_user = deploy[:database][:hyena_db_user][:username]
   current_password = deploy[:database][:hyena_db_user][:password]
   instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}
-  user_ips = instances_ips.push(*deploy[:database][:hyena_db_user][:ips])
+  user_ips = instances_ips.push(*deploy[:database][:hyena_db_user][:ips]).unshift('localhost')
   user_ips.each do |ip|
     execute "create user #{current_user}@#{ip}" do
       sql_user = Array.new.tap do |sql|
