@@ -11,7 +11,7 @@ node[:deploy].each do |application, deploy|
   current_user = deploy[:database][:hyena_db_user][:username]
   current_password = deploy[:database][:hyena_db_user][:password]
   instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}
-  user_ips = instances_ips.push(*deploy[:database][:hyena_db_user][:ips]).unshift('localhost')
+  user_ips = instances_ips.push(*deploy[:database][:hyena_db_user][:ips])
   user_ips.each do |ip|
     execute "create user #{current_user}@#{ip}" do
       sql_user = Array.new.tap do |sql|
