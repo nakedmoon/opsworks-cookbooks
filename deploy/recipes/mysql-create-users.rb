@@ -7,7 +7,7 @@ node[:deploy].each do |application, deploy|
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u #{deploy[:database][:username]} #{node[:mysql][:server_root_password].blank? ? '' : "-p#{node[:mysql][:server_root_password]}"}"
 
-  instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}
+  instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}.push('localhost')
 
   deploy[:database][:hyena_db_users].each do |user|
     current_user = user[:username]
