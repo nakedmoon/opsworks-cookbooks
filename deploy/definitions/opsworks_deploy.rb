@@ -153,7 +153,7 @@ define :opsworks_deploy do
             owner node[:deploy][application][:user]
             group node[:deploy][application][:group]
             variables(
-                :database => node[:deploy][application][:database],
+                :database => deploy[:database],
                 :current_dir => node[:deploy][application][:current_path],
                 :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
                                             'vendor',
