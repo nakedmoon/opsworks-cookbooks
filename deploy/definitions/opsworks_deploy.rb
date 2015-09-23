@@ -191,7 +191,8 @@ define :opsworks_deploy do
             owner node[:deploy][application][:user]
             group node[:deploy][application][:group]
             variables(
-                :database => deploy[:database]
+                :database => deploy[:database],
+                :migrations_dir => ::File.join(node[:deploy][application][:deploy_to], 'migrations'),
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

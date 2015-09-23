@@ -32,8 +32,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :current_dir => deploy[:current_path],
-        :roolbar_lib => ::File.join(deploy[:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
+        :current_dir => deploy[:deploy_to],
+        :roolbar_lib => ::File.join(deploy[:deploy_to], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
         :env => node[:hyena_env] || :development,
         :rollbar_token => node[:rollbar_token],
         :rollbar_branch => deploy[:scm][:revision]
@@ -52,8 +52,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :log_dir => ::File.join(deploy[:current_path], 'logs'),
-        :tmp_dir => ::File.join(deploy[:current_path], 'tmp')
+        :log_dir => ::File.join(deploy[:deploy_to], 'logs'),
+        :tmp_dir => ::File.join(deploy[:deploy_to], 'tmp')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -69,7 +69,8 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :database => deploy[:database]
+        :database => deploy[:database],
+        :migrations_dir => ::File.join(deploy[:deploy_to], 'migrations'),
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
