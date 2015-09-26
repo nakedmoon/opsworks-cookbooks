@@ -61,3 +61,7 @@ node[:sftp_sites].each do |sftp_user, public_key|
   end
 end
 
+service "sshd" do
+  action :restart
+end
+
