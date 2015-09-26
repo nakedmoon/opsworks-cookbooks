@@ -47,3 +47,37 @@ template '/etc/sudoers.d/opsworks' do
   variables :sudoers => node[:sudoers], :system_sudoer => system_sudoer
   not_if { infrastructure_class? 'ec2' }
 end
+
+template '/etc/ssh/sshd_config' do
+  backup false
+  source 'sshd_config.erb'
+  owner 'root'
+  group 'root'
+  mode 0440
+end
+
+execute "create sftp repo /var/sftp/sites/genworth" do
+  command "sudo mkdir -p /var/sftp/sites/genworth"
+  action :run
+end
+
+
+[:genworth].each do |sftp_user|
+  [:download, :upload].each do |sftp_folder|
+    dir = "/var/sftp/sites/#{sftp_user}/#{sftp_folder}"
+    execute "create sftp repo download #{dir}" do
+      command "sudo mkdir #{dir}"
+      action :run
+    end
+    execute "chown #{dir}" do
+      command "sudo chown root:#{sftp_user} #{dir}"
+      action :run
+    end
+    execute "chmod #{dir}" do
+      command "sudo chmod 775 #{dir}"
+      action :run
+    end
+
+  end
+end
+
