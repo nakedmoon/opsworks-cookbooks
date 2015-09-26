@@ -28,14 +28,16 @@ node[:sftp_sites].each do |sftp_user, public_key|
     command "sudo su - #{sftp_user} -c \"chmod 700 .ssh\""
     action :run
   end
-  execute "add publick key for user #{sftp_user}" do
-    command "sudo su - #{sftp_user} -c \"echo \"#{public_key}\" > .ssh/authorized_keys\""
-    action :run
+
+  template "/home/#{sftp_user}/.ssh/authorized_keys" do
+    backup false
+    source 'authorized_keys.erb'
+    owner sftp_user
+    group sftp_user
+    variables :public_key => public_key
+    mode 0600
   end
-  execute "chmod .ssh dir for user #{sftp_user}" do
-    command "sudo su - #{sftp_user} -c \"chmod 600 .ssh/authorized_keys\""
-    action :run
-  end
+
   base_repo = File.join(sftp_base_dir, sftp_user.to_s)
   execute "create sftp repo #{base_repo}" do
     command "sudo mkdir #{base_repo}"
