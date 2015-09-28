@@ -8,8 +8,7 @@ node[:deploy].each do |application, deploy|
   mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --add-drop-table --skip-lock-tables %s | %s | %s %s"
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u root -p#{node[:mysql][:root_password]}"
-
-  mysql_definer_filter = "sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/'"
+  mysql_definer_filter = "sed '/^\/\*\!50013 DEFINER/d'"
 
 
   node[:mysql_import][:databases].each do |origin, db|
