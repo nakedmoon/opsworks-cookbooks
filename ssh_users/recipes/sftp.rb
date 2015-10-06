@@ -49,8 +49,8 @@ node[:sftp_sites].each do |sftp_site|
   template "/home/#{sftp_site[:download][:user]}/.ssh/authorized_keys" do
     backup false
     source 'authorized_keys.erb'
-    owner sftp_user
-    group sftp_user
+    owner sftp_site[:download][:user]
+    group sftp_site[:download][:user]
     variables :public_key => sftp_site[:download][:public_key]
     mode 0600
   end
@@ -58,8 +58,8 @@ node[:sftp_sites].each do |sftp_site|
   template "/home/#{sftp_site[:upload][:user]}/.ssh/authorized_keys" do
     backup false
     source 'authorized_keys.erb'
-    owner sftp_user
-    group sftp_user
+    owner sftp_site[:upload][:user]
+    group sftp_site[:upload][:user]
     variables :public_key => sftp_site[:upload][:public_key]
     mode 0600
   end
