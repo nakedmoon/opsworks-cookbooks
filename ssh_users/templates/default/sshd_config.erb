@@ -158,8 +158,18 @@ Subsystem sftp internal-sftp
 #	AllowTcpForwarding no
 #	ForceCommand cvs server
 
-Match User genworth
-ChrootDirectory /var/sftp/sites/genworth
-X11Forwarding no
-AllowTcpForwarding no
-ForceCommand internal-sftp
+<% @sftp_sites.each do |stp_site| %>
+
+    Match User <%= stp_site[:download][:user] %>
+    ChrootDirectory /var/sftp/sites/<%= stp_site[:home] %>
+    X11Forwarding no
+    AllowTcpForwarding no
+    ForceCommand internal-sftp
+
+    Match User <%= stp_site[:upload][:user] %>
+    ChrootDirectory /var/sftp/sites/<%= stp_site[:home] %>
+    X11Forwarding no
+    AllowTcpForwarding no
+    ForceCommand internal-sftp
+
+<% end %>
