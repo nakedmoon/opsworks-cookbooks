@@ -33,4 +33,16 @@ node[:deploy].each do |application, deploy|
       File.exists?("#{deploy[:deploy_to]}/shared/config")
     end
   end
+
+  node[:sftp_sites].each do |name, sftp|
+    template "/home/deploy/.ssh/#{name}.pem" do
+      backup false
+      source 'sftp.pem.erb'
+      owner deploy[:user]
+      group deploy[:group]
+      mode 0440
+      variables :private_key => sftp[:private_key]
+    end
+  end
+
 end
