@@ -26,7 +26,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :sftp => node[:sft_sites][:zurich],
+        :sftp => node[:sftp_sites][:zurich],
         :private_key_file => '/home/deploy/.ssh/zurich.pem'
     )
     only_if do
