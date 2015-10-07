@@ -22,60 +22,27 @@ node[:deploy].each do |application, deploy|
     end
   end
 
-
-  # write out db.php
-  template "#{deploy[:deploy_to]}/shared/config/db.php" do
+  template "#{deploy[:deploy_to]}/configuration/base.config.php" do
     cookbook 'php'
-    source 'db.php.erb'
+    source 'base.config.php.erb'
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :database => deploy[:database],
-        :current_dir => deploy[:deploy_to],
-        :roolbar_lib => ::File.join(deploy[:deploy_to], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
-        :env => node[:hyena_env] || :development,
-        :rollbar_token => node[:rollbar_token],
-        :rollbar_branch => deploy[:scm][:revision]
+        :current_dir => deploy[:deploy_to]
     )
-    only_if do
-      File.exists?("#{deploy[:deploy_to]}/shared/config")
-    end
   end
 
-  # write out configuration.php
-  template "#{deploy[:deploy_to]}/shared/config/configuration.php" do
+
+  template "#{deploy[:deploy_to]}/openssl.cnf" do
     cookbook 'php'
-    source 'configuration.php.erb'
+    source 'openssl.cnf.erb'
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :database => deploy[:database],
-        :log_dir => ::File.join(deploy[:deploy_to], 'logs'),
-        :tmp_dir => ::File.join(deploy[:deploy_to], 'tmp')
+        :current_dir => deploy[:deploy_to]
     )
-    only_if do
-      File.exists?("#{deploy[:deploy_to]}/shared/config")
-    end
   end
-
-
-  # write out phinx.yml
-  template "#{deploy[:deploy_to]}/shared/config/phinx.yml" do
-    cookbook 'php'
-    source 'phinx.yml.erb'
-    mode '0660'
-    owner deploy[:user]
-    group deploy[:group]
-    variables(
-        :database => deploy[:database],
-        :migrations_dir => ::File.join(deploy[:deploy_to], 'migrations'),
-    )
-    only_if do
-      File.exists?("#{deploy[:deploy_to]}/shared/config")
-    end
-  end
-
 
 end
