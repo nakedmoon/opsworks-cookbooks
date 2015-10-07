@@ -5,11 +5,11 @@ template '/etc/ssh/sshd_config' do
   source 'sshd_config.erb'
   owner 'root'
   group 'root'
-  variables :sftp_sites => node[:sftp_sites]
+  variables :sftp_sites => node[:sftp_sites], :sftp_root => node[:sftp_root]
   mode 0440
 end
 
-sftp_base_dir = "/var/sftp/sites"
+sftp_base_dir = node[:sftp_root]
 
 execute "create sftp base dir #{sftp_base_dir}" do
   command "sudo mkdir -p #{sftp_base_dir}"
@@ -72,7 +72,7 @@ node[:sftp_sites].each do |sftp_site|
 
 
   # Download Folder
-  download_dir = File.join(base_repo, "download")
+  download_dir = File.join(base_repo, sftp_site[:upload][:folder])
   execute "create sftp repo #{download_dir}" do
     command "sudo mkdir #{download_dir}"
     action :run
@@ -90,7 +90,7 @@ node[:sftp_sites].each do |sftp_site|
 
 
   # Upload Folder
-  upload_dir = File.join(base_repo, "upload")
+  upload_dir = File.join(base_repo, sftp_site[:download][:folder])
   execute "create sftp repo #{upload_dir}" do
     command "sudo mkdir #{upload_dir}"
     action :run

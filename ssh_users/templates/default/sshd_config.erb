@@ -160,14 +160,16 @@ Subsystem sftp internal-sftp
 
 <% @sftp_sites.each do |stp_site| %>
 
+    <% chroot_dir = File.join(@sftp_root, stp_site[:home]) %>
+
     Match User <%= stp_site[:download][:user] %>
-    ChrootDirectory /var/sftp/sites/<%= stp_site[:home] %>
+    ChrootDirectory <%= chroot_dir %>
     X11Forwarding no
     AllowTcpForwarding no
     ForceCommand internal-sftp
 
     Match User <%= stp_site[:upload][:user] %>
-    ChrootDirectory /var/sftp/sites/<%= stp_site[:home] %>
+    ChrootDirectory <%= chroot_dir %>
     X11Forwarding no
     AllowTcpForwarding no
     ForceCommand internal-sftp
