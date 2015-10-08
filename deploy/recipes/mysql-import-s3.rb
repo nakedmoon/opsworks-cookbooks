@@ -61,7 +61,7 @@ node[:deploy].each do |application, deploy|
     end
 
     execute "import s3 dump #{db}" do
-      cwd "/tmp"
+      cwd "#{node[:mysql_import][:tmp_folder]}"
       s3_cmds = []
       s3_cmds << "sudo aws s3 cp s3://#{node[:mysql_import][:s3_bucket]}/#{db}.sql.gz ."
       s3_cmds << "sudo gzip -d #{db}.sql.gz"
