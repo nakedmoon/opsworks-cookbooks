@@ -11,7 +11,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :script_root => File.join(deploy[:deploy_to], "current"),
+        :shared_path => File.join(deploy[:deploy_to], "shared"),
         :service_url => node[:service_url]
     )
     only_if do
