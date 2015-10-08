@@ -33,7 +33,7 @@ node[:deploy].each do |application, deploy|
     variables(
         :database => deploy[:database],
         :current_dir => deploy[:deploy_to],
-        :roolbar_lib => ::File.join(deploy[:deploy_to], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
+        :roolbar_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
         :env => node[:hyena_env] || :development,
         :rollbar_token => node[:rollbar_token],
         :rollbar_branch => deploy[:scm][:revision]
