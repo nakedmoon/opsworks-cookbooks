@@ -52,7 +52,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :log_dir => ::File.join(deploy[:deploy_to], 'logs'),
+        :log_dir => ::File.join(deploy[:deploy_to], 'log'),
         :tmp_dir => ::File.join(deploy[:deploy_to], 'tmp')
     )
     only_if do

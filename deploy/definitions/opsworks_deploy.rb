@@ -177,7 +177,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :database => deploy[:database],
-                :log_dir => ::File.join(node[:deploy][application][:current_path], 'logs'),
+                :log_dir => ::File.join(node[:deploy][application][:current_path], 'log'),
                 :tmp_dir => ::File.join(node[:deploy][application][:current_path], 'tmp')
             )
             only_if do
