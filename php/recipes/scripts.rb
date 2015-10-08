@@ -11,7 +11,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :script_root => deploy[:deploy_to],
+        :script_root => File.join(deploy[:deploy_to], "current"),
         :service_url => node[:service_url]
     )
     only_if do
@@ -44,5 +44,6 @@ node[:deploy].each do |application, deploy|
       variables :private_key => sftp[:private_key]
     end
   end
+
 
 end
