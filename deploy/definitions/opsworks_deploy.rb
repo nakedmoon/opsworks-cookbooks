@@ -61,6 +61,10 @@ define :opsworks_deploy do
     end
   end
 
+  link "#{deploy[:deploy_to]}/current/export" do
+    to "#{deploy[:deploy_to]}/shared/export"
+  end
+
   ruby_block "change HOME to #{deploy[:home]} for source checkout" do
     block do
       ENV['HOME'] = "#{deploy[:home]}"
