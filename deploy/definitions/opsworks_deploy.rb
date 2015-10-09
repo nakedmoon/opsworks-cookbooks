@@ -169,6 +169,20 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/.htaccess" do
+            cookbook 'php'
+            source '.htaccess.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :error_level => 'E_ERROR',
+                :time_zone => 'Europe/Rome'
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
           template "#{node[:deploy][application][:deploy_to]}/shared/config/configuration.php" do
             cookbook 'php'
             source 'configuration.php.erb'

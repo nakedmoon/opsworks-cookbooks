@@ -77,5 +77,24 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  # write out .htaccess
+  template "#{deploy[:deploy_to]}/shared/config/.htaccess" do
+    cookbook 'php'
+    source '.htaccess.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :error_level => 'E_ERROR',
+        :time_zone => 'Europe/Rome'
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+
+
+
 
 end
