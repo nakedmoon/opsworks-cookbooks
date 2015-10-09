@@ -182,21 +182,6 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
-          # write out .htaccess
-          template "#{node[:deploy][application][:deploy_to]}/shared/config/.htaccess" do
-            cookbook 'php'
-            source '.htaccess.erb'
-            mode '0660'
-            owner deploy[:user]
-            group deploy[:group]
-            variables(
-                :error_level => 'E_ERROR',
-                :time_zone => 'Europe/Rome'
-            )
-            only_if do
-              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
-            end
-          end
 
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
