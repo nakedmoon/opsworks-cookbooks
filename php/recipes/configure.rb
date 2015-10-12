@@ -96,7 +96,7 @@ node[:deploy].each do |application, deploy|
   # write out fit2u_srv_config.inc.php
   template "#{deploy[:deploy_to]}/shared/config/fit2u_srv_config.inc.php" do
     cookbook 'php'
-    source 'fit2u_srv_config.inc.php'
+    source 'fit2u_srv_config.inc.php.erb'
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
