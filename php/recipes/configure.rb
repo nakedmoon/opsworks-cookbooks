@@ -93,6 +93,21 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  # write out fit2u_srv_config.inc.php
+  template "#{deploy[:deploy_to]}/shared/config/fit2u_srv_config.inc.php" do
+    cookbook 'php'
+    source 'fit2u_srv_config.inc.php'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :export_path => node[:export_dir]
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
 
 
 

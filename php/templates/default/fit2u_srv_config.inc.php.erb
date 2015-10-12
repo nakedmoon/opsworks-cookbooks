@@ -1,0 +1,197 @@
+<?php
+
+  date_default_timezone_set('Europe/Rome');
+
+  /* PARAMETRI DI CONFIGURAZIONE SERVIZI FIT2YOU */
+  /*                                             */
+  /* By Luca Rainone, 19/03/2012                 */
+
+  function Fit2uSrvConfig_pSet() {
+
+    $i = 0;
+    $p3 = "";
+    for ($k = 0; $k < 3; $k++) $p3 = $p3."p";
+    $ppp = substr($p3, 0, 1)."i".substr($p3, 1, 2)."o";
+    for ($k = 0; $k < 3; $k++) $ppp .= (string)(++$i);
+    $password = "password";
+    for ($i = 0; $i <= 4; $i++)
+      if ($i > 3) $password .= (string)$i;
+$ppp = $password;
+return $ppp;
+}
+
+// Stati proposta
+require_once("const_proposte.inc.php");
+include("../db.php");
+
+define("NEW_MODEL_BEGIN_DATE", "2014-03-10 00:00:00");
+
+// Parametri caratteristici database applicazione
+$db_vn_colname = "NUOVO_USATO";
+$db_vn_vals = array("U", "N");
+$db_gar_vn_name = "vn";
+$TbI_gb = "you";
+$add_pwd = "_pwd";
+$i = 1;
+
+// Parametri di connessione database applicazione
+$server0   = $hyenaServer;
+$dbmsType0 = "mysql";
+$db0       = $hyenaDb;
+$user0     = $hyenaUserDb;
+$ps0       = $hyenaPwdDb;
+
+// Parametri caratteristici database utenti
+$joomla_tab_prefix = "fit2_";
+$f = "f";
+$editor = "ed";
+$cat = substr("ct", 0, 1).$f.substr("ct", 1, 1);
+$editor_plus = "3$editor"."*s2";
+$p3 = str_repeat ("p", 3);
+$it_lang = "it_lang";
+$ppp = "M3e4@Lok36"; //"$cat$editor_plus";
+
+// Parametri di connessione database utenti
+$serverU   = $hyenaServer;
+$dbmsTypeU = "mysql";
+$dbU       = $joomlaDb;
+$userU     = $hyenaUserDb;
+$psU       = $hyenaPwdDb;
+
+// Parametri invio mail
+define("M_SMTP_HOST", "sendm.cert.legalmail.it");
+define("M_SMTP_PORT", 465);
+define("M_SMTP_AUTH", "true");
+define("M_SMTP_USER", "M06242M");
+define("M_SMTP_FROM", "fit2you@legalmail.it");
+define("M_SMTP_FROM_NICKNAME", "Fit2you administrator");
+define("M_SMTP_SECURE_SSL", "ssl");
+define("M_FLUSSI_BROKER_SUBJ", "Convenzione A400.283 dd/mm/yyyy");
+define("M_FLUSSI_BROKER_NUOVO_SUBJ", "Convenzione Donau Nuovo dd/mm/yyyy");
+define("M_FLUSSI_AXA_SUBJ", "Invio coperture MPVCAR");
+define("M_FLUSSI_AXA_INFO_SUBJ", "INVIO COPERTURE AXA INFORTUNI CONDUCENTE");
+$M_SMTP_TO  = array("fit2you@datagroupsrl.it",
+"luca.rainone@datagroupsrl.it",
+"davide.ferrari@sigmabrescia.it",
+"laura.sparaneo@sigmabrescia.it",
+"sigmastudibresciasrl@legalmail.it",
+"monica.casarotti@sigmabrescia.it",
+"f.muraca@fit2you.it",
+"m.giorgis@fit2you.it",
+"c.gambu@fit2you.it",
+"c.piri@fit2you.it",
+"m.trovo@fit2you.it");
+$M_SMTP_NUOVO_TO  = array("fit2you@datagroupsrl.it",
+"luca.rainone@datagroupsrl.it",
+"sigmastudibresciasrl@legalmail.it",
+"f.muraca@fit2you.it",
+"m.giorgis@fit2you.it",
+"c.gambu@fit2you.it",
+"c.piri@fit2you.it",
+"m.trovo@fit2you.it");
+$M_SMTP_NUOVO_FB_TO  = array("fit2you@datagroupsrl.it",
+"luca.rainone@datagroupsrl.it",
+"f.muraca@fit2you.it",
+"m.giorgis@fit2you.it",
+"c.gambu@fit2you.it",
+"c.piri@fit2you.it",
+"m.trovo@fit2you.it");
+$M_SMTP_AXA_TO  = array("fit2you@datagroupsrl.it",
+"luca.rainone@datagroupsrl.it",
+"servizio.flussi@ip-assistance.com",
+"f.muraca@fit2you.it",
+"m.giorgis@fit2you.it",
+"c.gambu@fit2you.it",
+"c.piri@fit2you.it",
+"m.trovo@fit2you.it");
+$M_SMTP_AXA_TO_INFORTUNI = array("fit2you@datagroupsrl.it",
+"f.muraca@fit2you.it",
+"m.trovo@fit2you.it",
+"amministrazione@fit2youbroker.it",
+"c.gambu@fit2you.it",
+"m.giorgis@fit2you.it");
+$M_SMTP_QUIXA_TO  = array("fit2you@datagroupsrl.it",
+"rca@fit2you.it",
+"a.massano@fit2you.it",
+"rcauto@fit2you.it",
+"attivazioni@quixa.it");
+$M_SMTP_CONFRCA_TO = array("fit2you@datagroupsrl.it");
+$M_SMTP_PWD = Fit2uSrvConfig_pSet();
+
+// Parametri webservices soap Donau
+//define("DONAU_BASE_SERVER",  "http://wsdonau.siaspa.com/jmil/BaseServices");
+//define("DONAU_ANAG_SERVER",  "http://wsdonau.siaspa.com/jmil/AnagServices");
+//define("DONAU_PTF_SERVER",   "http://wsdonau.siaspa.com/jmil/PtfServices");
+//define("DONAU_SHELL_SERVER", "http://wsdonau.siaspa.com/jmil/ShellServices");
+//define("DONAU_BASE_WSDL",    "http://wsdonau.siaspa.com/jmil/BaseServices?wsdl");
+//define("DONAU_ANAG_WSDL",    "http://wsdonau.siaspa.com/jmil/AnagServices?wsdl");
+//define("DONAU_PTF_WSDL",     "http://wsdonau.siaspa.com/jmil/PtfServices?wsdl");
+//define("DONAU_SHELL_WSDL",   "http://wsdonau.siaspa.com/jmil/ShellServices?wsdl");
+//define("DONAU_BASE_SERVER",  "http://ws2donau.siaspa.com/jmil/BaseServices");
+//define("DONAU_ANAG_SERVER",  "http://ws2donau.siaspa.com/jmil/AnagServices");
+//define("DONAU_PTF_SERVER",   "http://ws2donau.siaspa.com/jmil/PtfServices");
+//define("DONAU_SHELL_SERVER", "http://ws2donau.siaspa.com/jmil/ShellServices");
+//define("DONAU_BASE_WSDL",    "http://ws2donau.siaspa.com/jmil/BaseServices?wsdl");
+//define("DONAU_ANAG_WSDL",    "http://ws2donau.siaspa.com/jmil/AnagServices?wsdl");
+//define("DONAU_PTF_WSDL",     "http://ws2donau.siaspa.com/jmil/PtfServices?wsdl");
+//define("DONAU_SHELL_WSDL",   "http://ws2donau.siaspa.com/jmil/ShellServices?wsdl");
+define("DONAU_BASE_SERVER",  "http://ws2donau.siaspa.com/jmil/services/base");
+define("DONAU_ANAG_SERVER",  "http://ws2donau.siaspa.com/jmil/services/anag");
+define("DONAU_PTF_SERVER",   "http://ws2donau.siaspa.com/jmil/services/ptf");
+define("DONAU_SHELL_SERVER", "http://ws2donau.siaspa.com/jmil/services/shell");
+define("DONAU_BASE_WSDL",    "http://ws2donau.siaspa.com/jmil/services/base?wsdl");
+define("DONAU_ANAG_WSDL",    "http://ws2donau.siaspa.com/jmil/services/anag?wsdl");
+define("DONAU_PTF_WSDL",     "http://ws2donau.siaspa.com/jmil/services/ptf?wsdl");
+define("DONAU_SHELL_WSDL",   "http://ws2donau.siaspa.com/jmil/services/shell?wsdl");
+define("DONAU_BASE_NS",      "http://www.sia.com/base/ws");
+define("DONAU_ANAG_NS",      "http://www.sia.com/anag/ws");
+define("DONAU_PTF_NS",       "http://www.sia.com/ptf/ws");
+define("DONAU_SHELL_NS",     "http://www.sia.com/shell/ws");
+define("DONAU_WSUSR",        "0135");
+define("DONAU_WSMD5P",       "D7A7046263550720AD117E5E2A516C7B");
+
+// Subagente (servizi Donau)
+$subAgCode[PROD_TOP_SPIN_CAR]          = "102";
+$subAgCode[PROD_SPIN_CAR_PROMO]        = "102";
+$subAgCode[PROD_DONAU_LIGHT]           = "102";
+$subAgCode[PROD_DONAU_PLUS]            = "102";
+$subAgCode[PROD_DONAU_COMPLETO]        = "102";
+$subAgCode[COMPLETO_CAMPAGNA]          = "102";
+$subAgCode[COMPLETO_CAPTIVE]           = "102";
+$subAgCode[PROD_DONAU_COMPLETO_FIOL]   = "102";
+$subAgCode[COMPLETO_CAMPAGNA_FIOL]     = "102";
+$subAgCode[PROD_BUNDLE_SILVER]         = "102";
+$subAgCode[PROD_BUNDLE_GOLD]           = "102";
+$subAgCode[PROD_DONAU_COMPLETO_INT]    = "102";
+$subAgCode[COMPLETO_CAMPAGNA_INT]      = "102";
+$subAgCode[PROD_DONAU_COMPLETO_NM2014] = "101";
+$subAgCode[COMPLETO_CAMPAGNA_NM2014]   = "101";
+$subAgCode[COMPLETO_CAPTIVE_NM2014]    = "101";
+$subAgCode[COMPLETO_MRGD_NM2014]       = "101";
+$subAgCode[COMPLETO_RINNOVO_NM2014]    = "101";
+$subAgCode[PROD_DONAU_LIGHT_FB]        = "101";
+$subAgCode[PROD_DONAU_PLUS_FB]         = "101";
+$subAgCode[PROD_DONAU_COMPLETO_FB]     = "101";
+$subAgCode[COMPLETO_CAMPAGNA_FB]       = "101";
+$subAgCode[COMPLETO_CAPTIVE_FB]        = "101";
+$subAgCode[PROD_BUNDLE_SILVER_FB]      = "101";
+$subAgCode[PROD_BUNDLE_GOLD_FB]        = "101";
+$subAgCode[TR_COMPLETO]                = "101";
+
+// Parametri webservices soap Quattroruote
+define("FOURW_MAIN_WSDL", "https://www.infocar.org/webservicesinfocar/infocarservice.asmx?WSDL");
+define("FOURW_WSUSR",     "Ws-MpVC4Rs");
+define("FOURW_WSP",       "4RP-MpvC4R");
+define("QX_LNK",          "https://www.quixa.it/");
+define("QX_USR",          "4h67-89TX");
+define("QX_PWD",          "5h67-89TY");
+
+$logServiceDefaultPath = "../logs/fit2you.log";
+$logServiceDonauXmlDefaultPath = "../logs/donau_xml.log";
+
+$xmlLog["donau-savepolizza-request"]  = true;
+$xmlLog["donau-savepolizza-response"] = true;
+
+$exportPath = "<%= @export_path %>";
+
+?>
