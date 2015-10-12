@@ -214,7 +214,7 @@ define :opsworks_deploy do
           end
           template "#{node[:deploy][application][:deploy_to]}/shared/config/fit2u_srv_config.inc.php" do
             cookbook 'php'
-            source 'fit2u_srv_config.inc.php'
+            source 'fit2u_srv_config.inc.php.erb'
             mode '0660'
             owner deploy[:user]
             group deploy[:group]
