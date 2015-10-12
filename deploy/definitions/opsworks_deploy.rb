@@ -219,7 +219,8 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :export_path => node[:export_dir]
+                :export_path => node[:export_dir],
+                :log_dir => ::File.join(node[:deploy][application][:current_path], 'log')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

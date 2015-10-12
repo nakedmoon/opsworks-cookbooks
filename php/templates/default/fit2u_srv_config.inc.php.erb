@@ -186,8 +186,8 @@ define("QX_LNK",          "https://www.quixa.it/");
 define("QX_USR",          "4h67-89TX");
 define("QX_PWD",          "5h67-89TY");
 
-$logServiceDefaultPath = "../logs/fit2you.log";
-$logServiceDonauXmlDefaultPath = "../logs/donau_xml.log";
+$logServiceDefaultPath = "<%= File.join(@log_dir, 'fit2you_service.log') %>";
+$logServiceDonauXmlDefaultPath = "<%= File.join(@log_dir, 'fit2you_donau_xml.log') %>";
 
 $xmlLog["donau-savepolizza-request"]  = true;
 $xmlLog["donau-savepolizza-response"] = true;
