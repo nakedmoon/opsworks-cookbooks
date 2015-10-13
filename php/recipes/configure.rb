@@ -1,3 +1,5 @@
+Chef::Log.level = :debug
+
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'php'
     Chef::Log.debug("Skipping php::configure application #{application} as it is not an PHP app")
@@ -125,7 +127,7 @@ node[:deploy].each do |application, deploy|
 
   node[:cron_scripts].each do |cmd, time|
     cli = File.join(deploy[:deploy_to], "current", cmd)
-    crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time, cli)
+    crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time, *cli.values)
     execute "add crontab line for #{cmd}" do
       user deploy[:user]
       command "echo #{crontab_cli} >> #{crontab_file}"
