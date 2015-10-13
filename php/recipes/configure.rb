@@ -116,16 +116,26 @@ node[:deploy].each do |application, deploy|
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
-    variables(
-        :script_path => "#{deploy[:deploy_to]}/current",
-    )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
     end
   end
 
+  crontab_file = "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
+
+  node[:cron_scripts].each do |cmd, time|
+    cli = File.join(deploy[:deploy_to], "current", cmd)
+    crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time, cli)
+    execute "add crontab line for #{cmd}" do
+      user deploy[:user]
+      command "echo #{crontab_cli} >> #{crontab_file}"
+      action :run
+    end
+  end
+
   execute "add crontab for user #{deploy[:user]}" do
-    command "sudo crontab -u #{deploy[:user]} #{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
+    user deploy[:user]
+    command "crontab #{crontab_file}"
     action :run
   end
 
