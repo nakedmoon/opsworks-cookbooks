@@ -135,11 +135,15 @@ node[:deploy].each do |application, deploy|
     end
   end
 
-  execute "add crontab for user #{deploy[:user]}" do
-    user deploy[:user]
-    command "crontab #{crontab_file}"
-    action :run
+  if node[:opsworks][:layers]['php-app'][:instances].keys.empty?
+    execute "add crontab for user #{deploy[:user]}" do
+      user deploy[:user]
+      command "crontab #{crontab_file}"
+      action :run
+    end
   end
+
+
 
 
 
