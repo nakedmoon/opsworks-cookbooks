@@ -127,7 +127,7 @@ node[:deploy].each do |application, deploy|
 
   node[:cron_scripts].each do |cmd, time|
     cli = File.join(deploy[:deploy_to], "current", cmd)
-    crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time, *cli.values)
+    crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time.values, cli)
     execute "add crontab line for #{cmd}" do
       user deploy[:user]
       command "echo #{crontab_cli} >> #{crontab_file}"
