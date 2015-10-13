@@ -109,6 +109,31 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  # write out crontab
+  template "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab" do
+    cookbook 'php'
+    source 'crontab.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :script_path => "#{deploy[:deploy_to]}/current",
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  execute "add crontab for user #{deploy[:user]}" do
+    command "sudo crontab -u #{deploy[:user]} #{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
+    action :run
+  end
+
+
+
+
+
+
 
 
 
