@@ -53,6 +53,15 @@ define :opsworks_deploy do
     end
   end
 
+  directory "#{deploy[:deploy_to]}/shared/export" do
+    recursive true
+    action :create
+    only_if do
+      !File.exists?("#{deploy[:deploy_to]}/shared/export")
+    end
+  end
+
+
   ruby_block "change HOME to #{deploy[:home]} for source checkout" do
     block do
       ENV['HOME'] = "#{deploy[:home]}"
@@ -219,7 +228,7 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :export_path => node[:export_dir],
+                :export_path => "#{deploy[:deploy_to]}/shared/export",
                 :log_dir => ::File.join(node[:deploy][application][:current_path], 'log')
             )
             only_if do

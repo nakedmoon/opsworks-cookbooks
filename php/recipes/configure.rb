@@ -101,7 +101,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :export_path => node[:export_dir],
+        :export_path => "#{deploy[:deploy_to]}/shared/export",
         :log_dir => ::File.join(deploy[:deploy_to], 'log')
     )
     only_if do
