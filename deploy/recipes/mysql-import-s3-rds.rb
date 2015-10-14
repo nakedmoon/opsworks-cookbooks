@@ -60,23 +60,36 @@ node[:deploy].each do |application, deploy|
 
     end
 
-    execute "import s3 dump #{db}" do
+    execute "download s3 dump #{db}" do
       cwd "#{node[:mysql_import][:tmp_folder]}"
       s3_cmds = []
       s3_cmds << "sudo aws s3 cp s3://#{node[:mysql_import][:s3_bucket]}/#{db}.sql.gz ."
       s3_cmds << "sudo gzip -d #{db}.sql.gz"
-      s3_cmds << "sed -i 's/\sDEFINER=`[^`]*`@`[^`]*`//' #{db}.sql"
-      s3_cmds << "sed -i 's/\sDEFAULT CURRENT_TIMESTAMP//' #{db}.sql"
-      s3_cmds << "#{mysql_command} #{db} < #{db}.sql"
-      s3_cmds << "sudo rm -f #{db}.sql"
-      log "executing command" do
-        message "running  #{s3_cmds.join(";")}"
-        level :info
-      end
       command s3_cmds.join(";")
       action :run
     end
 
+    execute "purge s3 dump #{db}" do
+      s3_cmds = []
+      s3_cmds << "sed -i 's/\sDEFINER=`[^`]*`@`[^`]*`//' #{db}.sql"
+      s3_cmds << "sed -i 's/\sDEFAULT CURRENT_TIMESTAMP//' #{db}.sql"
+      command s3_cmds.join(";")
+      action :run
+    end
+
+    execute "import s3 dump #{db}" do
+      s3_cmds = []
+      s3_cmds << "#{mysql_command} #{db} < #{db}.sql"
+      command s3_cmds.join(";")
+      action :run
+    end
+
+    execute "remove tmp dump #{db}" do
+      s3_cmds = []
+      s3_cmds << "sudo rm -f #{db}.sql"
+      command s3_cmds.join(";")
+      action :run
+    end
 
     log "#{db} import message" do
       message "Database #{db} imported from s3://#{node[:mysql_import][:s3_bucket]}/#{db}.sql.gz"

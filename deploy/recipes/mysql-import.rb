@@ -6,7 +6,7 @@ Chef::Log.level = :debug
 node[:deploy].each do |application, deploy|
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -u #{deploy[:database][:username]} #{node[:mysql][:server_root_password].blank? ? '' : "-p#{node[:mysql][:server_root_password]}"}"
-  mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --events --routines --skip-lock-tables %s | sed -- 's/\sDEFINER=`[^`]*`@`[^`]*`//' | sed -- 's/\sDEFAULT CURRENT_TIMESTAMP// | %s %s"
+  mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --events --routines --skip-lock-tables %s | sed -- 's/\sDEFINER=`[^`]*`@`[^`]*`//' | sed -- 's/\sDEFAULT CURRENT_TIMESTAMP//' | %s %s"
   instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}.push('localhost')
 
 
