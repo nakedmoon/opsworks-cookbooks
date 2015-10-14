@@ -69,6 +69,10 @@ node[:deploy].each do |application, deploy|
       s3_cmds << "sed -i 's/\sDEFAULT CURRENT_TIMESTAMP//' #{db}.sql"
       s3_cmds << "#{mysql_command} #{db} < #{db}.sql"
       s3_cmds << "sudo rm -f #{db}.sql"
+      log "executing command" do
+        message "running  #{s3_cmds.join(";")}"
+        level :info
+      end
       command s3_cmds.join(";")
       action :run
     end
