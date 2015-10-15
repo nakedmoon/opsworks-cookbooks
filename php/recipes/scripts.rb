@@ -35,15 +35,17 @@ node[:deploy].each do |application, deploy|
   end
 
   node[:sftp_sites].each do |name, sftp|
-    template "/home/deploy/.ssh/#{name}.pem" do
-      backup false
+    template "/home/#{deploy[:user]}/.ssh/#{name}.pem" do
+      cookbook 'php'
       source 'sftp.pem.erb'
+      mode '0600'
       owner deploy[:user]
       group deploy[:group]
-      mode 0440
       variables :private_key => sftp[:private_key]
     end
   end
+
+
 
 
 end
