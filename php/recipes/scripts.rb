@@ -27,7 +27,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :sftp => node[:sftp_sites][:zurich],
-        :private_key_file => "/home/#{deploy[:user]}/.ssh/zurich.pem"
+        :private_key_file => node[:sftp_sites][:zurich][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/zurich.pem" : nil
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -35,6 +35,7 @@ node[:deploy].each do |application, deploy|
   end
 
   node[:sftp_sites].each do |name, sftp|
+    next unless sftp[:private_key].present?
     template "/home/#{deploy[:user]}/.ssh/#{name}.pem" do
       cookbook 'php'
       source 'sftp.pem.erb'
