@@ -176,7 +176,7 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :sftp => node[:sftp_sites][:zurich],
-                :private_key_file => '/home/deploy/.ssh/zurich.pem'
+                :private_key_file => "/home/#{deploy[:user]}/.ssh/zurich.pem"
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
