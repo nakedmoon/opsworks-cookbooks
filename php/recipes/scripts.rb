@@ -14,6 +14,7 @@ node[:deploy].each do |application, deploy|
         :shared_path => File.join(deploy[:deploy_to], "shared"),
         :service_url => node[:service_url],
         :current_dir => node[:deploy][application][:current_path],
+        :rollbar_level => node[:rollbar_level],
         :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
                                    'vendor',
                                    'rollbar',
