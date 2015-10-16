@@ -7,7 +7,7 @@
         'environment' => '<%= @env %>',
         'root' => '<%= @current_dir %>',
         'branch' => '<%= @rollbar_branch %>',
-        'included_errno' => E_ERROR
+        'included_errno' => <%= @rollbar_level %>
     );
 
     Rollbar::init($config);

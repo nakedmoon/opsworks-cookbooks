@@ -164,6 +164,7 @@ define :opsworks_deploy do
             variables(
                 :database => deploy[:database],
                 :current_dir => node[:deploy][application][:current_path],
+                :rollbar_level => node[:rollbar_level],
                 :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
                                             'vendor',
                                             'rollbar',
@@ -185,8 +186,8 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :error_level => 'E_ERROR',
-                :time_zone => 'Europe/Rome'
+                :error_level => node[:php_error_level],
+                :time_zone => node[:php_timezone]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
