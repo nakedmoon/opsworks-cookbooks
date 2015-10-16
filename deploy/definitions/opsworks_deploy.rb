@@ -162,7 +162,18 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :shared_path => File.join(node[:deploy][application][:deploy_to], "shared"),
-                :service_url => node[:service_url]
+                :service_url => node[:service_url],
+                :current_dir => node[:deploy][application][:current_path],
+                :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
+                                           'vendor',
+                                           'rollbar',
+                                           'rollbar',
+                                           'src',
+                                           'rollbar.php'
+                ),
+                :env => node[:hyena_scripts_env] || :development,
+                :rollbar_token => node[:rollbar_token],
+                :rollbar_branch => node[:deploy][application][:scm][:revision]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

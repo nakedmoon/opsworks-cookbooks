@@ -3,6 +3,16 @@
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
+require_once '<%= @roolbar_lib %>';
+
+$config = array(
+    'access_token' => '<%= @rollbar_token %>',
+    'environment' => '<%= @env %>',
+    'root' => '<%= @current_dir %>',
+    'branch' => '<%= @rollbar_branch %>',
+    'included_errno' => E_ERROR
+);
+
 define("SERVICE_URL","<%= @service_url %>");
 
 define("SMTP_HOST", "sendm.cert.legalmail.it");

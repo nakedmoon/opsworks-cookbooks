@@ -12,7 +12,18 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :shared_path => File.join(deploy[:deploy_to], "shared"),
-        :service_url => node[:service_url]
+        :service_url => node[:service_url],
+        :current_dir => node[:deploy][application][:current_path],
+        :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
+                                   'vendor',
+                                   'rollbar',
+                                   'rollbar',
+                                   'src',
+                                   'rollbar.php'
+        ),
+        :env => node[:hyena_scripts_env] || :development,
+        :rollbar_token => node[:rollbar_token],
+        :rollbar_branch => deploy[:scm][:revision]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -45,6 +56,47 @@ node[:deploy].each do |application, deploy|
       variables :private_key => sftp[:private_key]
     end
   end
+
+
+  if node[:cron_scripts].present?
+
+    # write out crontab
+    template "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab" do
+      cookbook 'php'
+      source 'crontab.erb'
+      mode '0660'
+      owner deploy[:user]
+      group deploy[:group]
+      only_if do
+        File.exists?("#{deploy[:deploy_to]}/shared/config")
+      end
+    end
+
+    crontab_file = "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
+
+    node[:cron_scripts].each do |cmd, time|
+      cli = File.join(deploy[:deploy_to], "current", cmd)
+      crontab_cli = sprintf("%s  %s %s %s %s	php %s", *time.values, cli)
+      execute "add crontab line for #{cmd}" do
+        user deploy[:user]
+        command "echo '#{crontab_cli}' >> #{crontab_file}"
+        action :run
+      end
+    end
+
+    if node[:opsworks][:layers]['php-app'][:instances].keys.empty?
+      execute "add crontab for user #{deploy[:user]}" do
+        user deploy[:user]
+        command "crontab #{crontab_file}"
+        action :run
+      end
+    end
+
+  end
+
+
+
+
 
 
 
