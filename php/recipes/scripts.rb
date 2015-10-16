@@ -84,7 +84,7 @@ node[:deploy].each do |application, deploy|
       end
     end
 
-    if node[:opsworks][:layers]['php-app'][:instances].keys.empty?
+    if node[:opsworks][:layers]['php-app'][:instances].keys.size > 1
       execute "add crontab for user #{deploy[:user]}" do
         user deploy[:user]
         command "crontab #{crontab_file}"
