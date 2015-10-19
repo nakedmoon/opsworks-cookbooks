@@ -10,3 +10,8 @@
 #
 #normal[:apache][:contact] = 'you@your-site.com'
 #normal[:apache][:timeout] = 60
+
+default[:apache][:prefork][:startservers] = 32
+default[:apache][:prefork][:minspareservers] = 32
+default[:apache][:prefork][:maxspareservers] = 64
+default[:apache][:contact] = 'info@fit2you.it'
