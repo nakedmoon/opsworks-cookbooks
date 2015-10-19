@@ -236,6 +236,19 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/fit2u_appl_config.inc.php" do
+            cookbook 'php'
+            source 'fit2u_appl_config.inc.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :service_base_url => node[:service_url]
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
             OpsWorks::NodejsConfiguration.npm_install(application, node[:deploy][application], release_path, node[:opsworks_nodejs][:npm_install_options])

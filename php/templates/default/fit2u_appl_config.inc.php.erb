@@ -1,0 +1,339 @@
+<?php
+
+  /* PARAMETRI DI CONFIGURAZIONE APPLICAZIONE FIT2YOU */
+  /*                                                  */
+  /* By Luca Rainone, 19/03/2012                      */
+
+  // Stati proposta
+  require_once("const_proposte.inc.php");
+
+  include("const_fatture.inc.php");
+
+  define("ID_BROKER_SIGMA", "2651");
+  define("ID_BROKER_FIT2YOU", "2652");
+
+  $brokers = array(ID_BROKER_SIGMA, ID_BROKER_FIT2YOU);
+
+  define("RUOLO_VENDITORE", "Venditore");
+  define("RUOLO_FILIALE", "Filiale");
+  define("RUOLO_CONCESSIONARIO", "Concessionario");
+  define("RUOLO_CONSULENTE", "Consulente");
+  define("RUOLO_RESPONSABILE", "Responsabile");
+  define("RUOLO_BROKER", "Broker");
+  define("RUOLO_PARTNER", "Partner");
+  define("RUOLO_TITOLARE", "Titolare");
+
+  $group_ids = array(RUOLO_CONCESSIONARIO => '11', RUOLO_FILIALE => '13', RUOLO_VENDITORE => '19');
+
+
+
+function getUrl() {
+$url  = @( $_SERVER["HTTPS"] != 'on' ) ? 'http://'.$_SERVER["SERVER_NAME"] :  'https://'.$_SERVER["SERVER_NAME"];
+$url .= ( $_SERVER["SERVER_PORT"] !== 80 ) ? ":".$_SERVER["SERVER_PORT"] : "";
+
+return $url;
+
+}
+
+
+$urlBase = "<%= @service_base_url %>";
+
+
+// Servizio reperimento informazioni utenti
+$userXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$userServiceName  = "prev-server";
+$userMethodName   = "getUtenti";
+
+// Servizio reperimento ruoli utenti
+$roleXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$roleServiceName  = "prev-server";
+$roleMethodName   = "getRuoli";
+
+// Servizio calcolo gerarchie
+$gerarcXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$gerarcServiceName  = "prev-server";
+$gerarcMethodName   = "getGerarchia";
+
+// Servizio elenco garanzie
+$garProdXmlRpcServer = $urlBase."/services/servizioElencoGaranzie.php";
+$garProdServiceName  = "prod-garanzie-server";
+$garProdMethodName   = "elencoProdottiGaranzie";
+
+// Servizio garanzie mutuamente esclusive
+$mutGarXmlRpcServer = $urlBase."/services/servizioElencoGaranzie.php";
+$mutGarServiceName  = "prod-garanzie-server";
+$mutGarMethodName   = "getMutuaEsclusioneGaranzie";
+
+// Servizio durate tariffe per prodotto e garanzia
+$duTarGarXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$duTarGarServiceName  = "prev-server";
+$duTarGarMethodName   = "getDurateTariffeGaranzie";
+
+// Servizio recupero scorpori tariffe
+$tarScoXmlRpcServer = $urlBase."/services/servizioGetTariffaScorporo.php";
+$tarScoServiceName  = "scorptar-server";
+$tarScoMethodName   = "getScorporoTariffa";
+
+// Servizio calcolo tariffe
+$calcPrevXmlRpcServer    = $urlBase."/services/servizioCalcoloPreventivi.php";
+$calcPrevServiceName     = "prev-server";
+$calcPrevTarifMethodName = "calcoloTariffa";
+
+// Servizio recupero dati tariffe
+$tarDatXmlRpcServer    = $urlBase."/services/servizioCalcoloPreventivi.php";
+$tarDatServiceName     = "prev-server";
+$tarDatMethodName      = "recuperoDatiTariffa";
+
+// Servizio query su tabella tariffe
+$tarQryXmlRpcServer    = $urlBase."/services/servizioCalcoloPreventivi.php";
+$tarQryServiceName     = "prev-server";
+$tarQryMethodName      = "getFromTariffe";
+
+// Servizio remunerazioni
+$remunXmlRpcServer    = $urlBase."/services/servizioCalcoloPreventivi.php";
+$remunServiceName     = "prev-server";
+$remunMethodName      = "calcoloRemunerazioni";
+
+// Servizio recupero dati enti vincolanti
+$getEnteVincolXmlRpcServer = $urlBase."/services/servizioEntiVincolanti.php";
+$getEnteVincolServiceName  = "entivincol-server";
+$getEnteVincolMethodName   = "getEntiVincolanti";
+
+// Servizio inserimento proposta
+$insPropXmlRpcServer = $urlBase."/services/servizioScritturaProposte.php";
+$insPropServiceName  = "proposte-server";
+$insPropMethodName   = "insProposta";
+
+// Servizio update proposta
+$updPropXmlRpcServer = $urlBase."/services/servizioUpdateProposte.php";
+$updPropServiceName  = "proposte-server";
+$updPropMethodName   = "updateProposta";
+
+// Servizio update dettaglio proposta tariffa
+$updPropDettTarifXmlRpcServer = $urlBase."/services/servizioUpdateProposte.php";
+$updPropDettTarifServiceName  = "proposte-server";
+$updPropDettTarifMethodName   = "updatePropostaDettaglioTariffa";
+
+// Servizio consultazione proposte
+$getPropXmlRpcServer  = $urlBase."/services/servizioGetProposte.php";
+$getPropServiceName   = "get-proposte-server";
+$getPropMethodName    = "getProposte";
+$stdGetPropMethodName = "getProposteStd";
+
+// Servizio esportazione proposte
+$expPropXmlRpcServer = $urlBase."/services/servizioExportProposte.php";
+$expPropServiceName  = "export-proposte-server";
+$expPropMethodName   = "exportProposte";
+
+// Servizio ricerca dati Isvap
+$isvapSrchXmlRpcServer = $urlBase."/services/servizioRicercaDatiIsvap.php";
+$isvapSrchServiceName  = "isvap-server";
+$isvapSrchMethodName   = "ricercaDatiIsvap";
+
+// Servizio inserimento fattura
+$insFattXmlRpcServer = $urlBase."/services/servizioScritturaFatture.php";
+$insFattServiceName  = "fatture-server";
+$insFattMethodName   = "insFattura";
+
+// Servizio filtraggio proposte gia' fatturate
+$fltPropsFattXmlRpcServer = $urlBase."/services/servizioScritturaFatture.php";
+$fltPropsFattServiceName  = "fatture-server";
+$fltPropsFattMethodName   = "filterPropsFatt";
+
+// Servizio recupero margini calcolati per garanzia
+$getMargCalcGarXmlRpcServer = $urlBase."/services/servizioScritturaFatture.php";
+$getMargCalcGarServiceName  = "fatture-server";
+$getMargCalcGarMethodName   = "getMarginiCalcGar";
+
+// Servizio recupero margini perc soggetto per Italiana Assicurazioni
+$getMargItaAssXmlRpcServer = $urlBase."/services/servizioScritturaFatture.php";
+$getMargItaAssServiceName  = "fatture-server";
+$getMargItaAssMethodName   = "getMarginiItaAss";
+
+// Servizio recupero dati codici iva
+$getIvaXmlRpcServer = $urlBase."/services/servizioCodiciIva.php";
+$getIvaServiceName  = "iva-server";
+$getIvaMethodName   = "getCodiciIva";
+
+// Servizio consultazione fatture
+$getFattXmlRpcServer = $urlBase."/services/servizioGetFatture.php";
+$getFattServiceName  = "get-fatture-server";
+$getFattMethodName   = "getFatture";
+
+// Servizio recupero dati per header fatture
+$getFattHeaderXmlRpcServer = $urlBase."/services/servizioGetFatture.php";
+$getFattHeaderServiceName  = "get-fatture-server";
+$getFattHeaderMethodName   = "getFattHeader";
+
+// Servizio update fattura
+$updFattXmlRpcServer = $urlBase."/services/servizioUpdateFatture.php";
+$updFattServiceName  = "fatture-server";
+$updFattMethodName   = "updateFattura";
+
+// Servizio update soggetto su db dati
+$updSoggXmlRpcServer = $urlBase."/services/servizioScritturaSoggetti.php";
+$updSoggServiceName  = "soggetti-server";
+$updSoggMethodName   = "updateSoggetto";
+
+// Servizio update utente soggetto su Joomla
+$updUserXmlRpcServer = $urlBase."/services/servizioScritturaSoggetti.php";
+$updUserServiceName  = "soggetti-server";
+$updUserMethodName   = "updateUser";
+
+// Servizio update legami soggetto-prodotto
+$updSubPrdXmlRpcServer = $urlBase."/services/servizioScritturaSoggetti.php";
+$updSubPrdServiceName  = "soggetti-server";
+$updSubPrdMethodName   = "writeSoggettoProdotto";
+
+// Servizio update sconti su db dati
+$updScontiXmlRpcServer = $urlBase."/services/servizioScontiMargini.php";
+$updScontiServiceName  = "scontiMargini-server";
+$updScontiMethodName   = "updateSconti";
+
+// Servizio update margini su db dati
+$updMarginiXmlRpcServer = $urlBase."/services/servizioScontiMargini.php";
+$updMarginiServiceName  = "scontiMargini-server";
+$updMarginiMethodName   = "updateMargini";
+
+// Servizio inserimento margini ricalcolati
+$insMarginiRicalcXmlRpcServer = $urlBase."/services/servizioScritturaRicalcMargini.php";
+$insMarginiRicalcServiceName  = "marginiRicalc-server";
+$insMarginiRicalcMethodName   = "insertMarginiRicalc";
+
+// Servizio cancellazione massiva margini ricalcolati
+$delAllMarginiRicalcXmlRpcServer = $urlBase."/services/servizioScritturaRicalcMargini.php";
+$delAllMarginiRicalcServiceName  = "marginiRicalc-server";
+$delAllMarginiRicalcMethodName   = "deleteAllMarginiRicalc";
+
+// Servizio gerarchie sottostanti
+$gerSotXmlRpcServer = $urlBase."/services/servizioGerarchieSottostanti.php";
+$gerSotServiceName  = "gerarchie-sottostanti-server";
+$gerSotMethodName   = "gerarchieSottostanti";
+
+// Servizio recupero dati fit2you di uno o piu' attori
+$f2uActXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$f2uActServiceName  = "prev-server";
+$f2uActMethodName   = "getDatiAttoriFit2you";
+
+// Servizio lettura legami prodotti bundle
+$bunXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$bunServiceName  = "prev-server";
+$bunMethodName   = "getLegamiProdottiBundle";
+
+// Servizio recupero lista documenti da stampare
+$getDoc2PrtXmlRpcServer = $urlBase."/services/servizioGetDocumentiDaStampare.php";
+$getDoc2PrtServiceName  = "doc2print-server";
+$getDoc2PrtMethodName   = "getDoc2Print";
+
+// Servizio recupero stampe Donau
+$donDocXmlRpcServer = $urlBase."/services/servizioGetDocumentiDaStampare.php";
+$donDocServiceName  = "doc2print-server";
+$donDocMethodName   = "getPdfDocDonau";
+
+// Servizio recupero informazioni veicolo data la targa
+$infoTarXmlRpcServer = $urlBase."/services/servizioCall4ruoteServer.php";
+$infoTarServiceName  = "4r_server";
+$infoTarMethodName   = "getInfoCarFromTarga";
+
+// Servizio recupero lista modelli veicoli data la marca
+$modeLstXmlRpcServer = $urlBase."/services/servizioCall4ruoteServer.php";
+$modeLstServiceName  = "4r_server";
+$modeLstMethodName   = "getListaModelli";
+
+// Servizio recupero lista allestimenti veicolo dato il modello
+$alstLstXmlRpcServer = $urlBase."/services/servizioCall4ruoteServer.php";
+$alstLstServiceName  = "4r_server";
+$alstLstMethodName   = "getListaAllestimenti";
+
+// Servizio ricerche nella tabella comuni
+$locXmlRpcServer = $urlBase."/services/servizioComuni.php";
+$locServiceName  = "loc-server";
+$locMethodName   = "locSearch";
+
+// Servizio lettura anagrafica canale
+$getChAnXmlRpcServer = $urlBase."/services/servizioCalcoloPreventivi.php";
+$getChAnServiceName  = "prev-server";
+$getChAnMethodName   = "getFromAnagCanale";
+
+// Servizio gestione allegati
+$attachsXmlRpcServer = $urlBase."/services/servizioAllegatiProposta.php";
+$attachsServiceName  = "allegati-server";
+// Metodo recupero allegati
+$getAttachMethodName   = "getAllegatiProp";
+// Metodo aggiornamento allegati
+$updAttachMethodName   = "updateAllegatiProp";
+// Metodo inserimento allegati
+$insAttachMethodName   = "insertAllegatiProp";
+
+// Servizio lettura pcl personalizzati
+$pclPersXmlRpcServer = $urlBase."/services/servizioPclPersonalizzato.php";
+$pclPersServiceName  = "pcl-pers-server";
+$pclPersMethodName   = "extractPersPclData";
+
+// Servizio modifica pcl personalizzati
+$pclPersUpdXmlRpcServer = $urlBase."/services/servizioPclPersonalizzato.php";
+$pclPersUpdServiceName  = "pcl-pers-server";
+$pclPersUpdMethodName   = "updatePersPclData";
+
+// Servizio inserimento o modifica pcl personalizzati
+$pclPersInsUpdXmlRpcServer = $urlBase."/services/servizioPclPersonalizzato.php";
+$pclPersInsUpdServiceName  = "pcl-pers-server";
+$pclPersInsUpdMethodName   = "insertOrUpdatePersPclData";
+
+// Servizio log applicazione
+$appLogXmlRpcServer = $urlBase."/services/logService.php";
+$appLogServiceName  = "log-server";
+$appLogMethodName   = "applicationLog";
+
+// Altri servizi
+$xmlRpcServer    = $urlBase."/services/servizioCalcoloPreventivi.php";
+$provServiceName = "prev-server";
+$provMethodName  = "getProvince";
+$pvprServiceName = "prev-server";
+$pvprMethodName  = "getProvince4prod";
+$pvzgServiceName = "prev-server";
+$pvzgMethodName  = "getProvincePerZonaGeog";
+$pvgdServiceName = "prev-server";
+$pvgdMethodName  = "getProvData";
+$modmServiceName = "prev-server";
+$modmMethodName  = "getAllModelliMarche";
+$mmprServiceName = "prev-server";
+$mmprMethodName  = "getModelliMarche4prod";
+$mmspServiceName = "prev-server";
+$mmspMethodName  = "getModelliMarche4subjprod";
+$amspServiceName = "prev-server";
+$amspMethodName  = "getFromAnagMarca";
+$prodServiceName = "prev-server";
+$prodMethodName  = "getProdotti";
+$prsuServiceName = "prev-server";
+$prsuMethodName  = "getProdotti4subj";
+$prrlServiceName = "prev-server";
+$prrlMethodName  = "getProdRules";
+$dtprServiceName = "prev-server";
+$dtprMethodName  = "getDettaglioProdotto";
+$cplsServiceName = "prev-server";
+$cplsMethodName  = "getCompanyList";
+$cprlServiceName = "prev-server";
+$cprlMethodName  = "getCpRules";
+$statServiceName = "prev-server";
+$statMethodName  = "getStatusMap";
+$atchServiceName = "prev-server";
+$atchMethodName  = "getAttachmentData";
+$ptvpServiceName = "prev-server";
+$ptvpMethodName  = "getPreselProdVnvo";
+$dmcpServiceName = "prev-server";
+$dmcpMethodName  = "getMaxDur4cp";
+$cnstServiceName = "prev-server";
+$cnstMethodName  = "getConstant";
+$dbtmServiceName = "prev-server";
+$dbtmMethodName  = "getDbTime";
+
+// Servizi Donau
+$donau_base_server = "http://wsdonau.siaspa.com/jmil/BaseServices";
+$donau_anag_server = "http://wsdonau.siaspa.com/jmil/AnagServices";
+$donau_base_wsdl = "http://wsdonau.siaspa.com/jmil/BaseServices?wsdl";
+$donau_anag_wsdl = "http://wsdonau.siaspa.com/jmil/AnagServices?wsdl";
+$donau_ns_base = "http://www.sia.com/base/ws";
+$donau_ns_anag = "http://www.sia.com/anag/ws";
+
+?>

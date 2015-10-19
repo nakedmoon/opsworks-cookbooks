@@ -112,6 +112,22 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+
+  # write out fit2u_appl_config.inc.php
+  template "#{deploy[:deploy_to]}/shared/config/fit2u_appl_config.inc.php" do
+    cookbook 'php'
+    source 'fit2u_appl_config.inc.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :service_base_url => node[:service_url]
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
   # write out crontab
   template "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab" do
     cookbook 'php'
