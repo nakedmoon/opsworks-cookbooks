@@ -84,7 +84,7 @@ node[:sftp_sites].each do |sftp_site|
   end
 
   execute "chmod #{download_dir}" do
-    command "sudo chmod 0750 -R #{download_dir}"
+    command "sudo chmod #{node[:sftp_permission]} -R #{download_dir}"
     action :run
   end
 
@@ -102,7 +102,7 @@ node[:sftp_sites].each do |sftp_site|
   end
 
   execute "chmod #{upload_dir}" do
-    command "sudo chmod 0750 -R #{upload_dir}"
+    command "sudo chmod #{node[:sftp_permission]} -R #{upload_dir}"
     action :run
   end
 
