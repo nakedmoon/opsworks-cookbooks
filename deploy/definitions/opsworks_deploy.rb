@@ -173,7 +173,22 @@ define :opsworks_deploy do
                                             'rollbar.php'
                 ),
                 :env => node[:hyena_env] || :development,
-                :rollbar_token => node[:rollbar_token]
+                :rollbar_token => node[:rollbar_token],
+                :fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php')
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/phpfastcache.php" do
+            cookbook 'php'
+            source 'phpfastcache.php.erb'
+            mode '0660'
+            owner node[:deploy][application][:user]
+            group node[:deploy][application][:group]
+            variables(
+                :fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
+                :fastcache_storage => node[:fastcache_storage] || :files
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

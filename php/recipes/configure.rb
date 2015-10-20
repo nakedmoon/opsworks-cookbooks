@@ -39,7 +39,24 @@ node[:deploy].each do |application, deploy|
         :roolbar_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
         :env => node[:hyena_env] || :development,
         :rollbar_token => node[:rollbar_token],
-        :rollbar_branch => deploy[:scm][:revision]
+        :rollbar_branch => deploy[:scm][:revision],
+        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php')
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  # write out phpfastcache.php
+  template "#{deploy[:deploy_to]}/shared/config/phpfastcache.php" do
+    cookbook 'php'
+    source 'phpfastcache.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
+        :fastcache_storage => node[:fastcache_storage] || :files
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
