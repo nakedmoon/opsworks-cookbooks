@@ -72,7 +72,7 @@ node[:sftp_sites].each do |sftp_site|
 
 
   # Download Folder
-  download_dir = File.join(base_repo, sftp_site[:upload][:folder])
+  download_dir = File.join(base_repo, sftp_site[:download][:folder])
   execute "create sftp repo #{download_dir}" do
     command "sudo mkdir #{download_dir}"
     action :run
@@ -90,7 +90,7 @@ node[:sftp_sites].each do |sftp_site|
 
 
   # Upload Folder
-  upload_dir = File.join(base_repo, sftp_site[:download][:folder])
+  upload_dir = File.join(base_repo, sftp_site[:upload][:folder])
   execute "create sftp repo #{upload_dir}" do
     command "sudo mkdir #{upload_dir}"
     action :run
