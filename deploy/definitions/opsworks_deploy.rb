@@ -188,7 +188,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-                :fastcache_storage => node[:fastcache_storage] || :files
+                :fastcache_storage => node[:fastcache_storage]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

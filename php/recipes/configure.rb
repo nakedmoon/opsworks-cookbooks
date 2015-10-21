@@ -56,7 +56,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-        :fastcache_storage => node[:fastcache_storage] || :files
+        :fastcache_storage => node[:fastcache_storage]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
