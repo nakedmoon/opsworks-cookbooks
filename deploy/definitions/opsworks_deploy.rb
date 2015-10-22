@@ -61,6 +61,14 @@ define :opsworks_deploy do
     end
   end
 
+  directory "#{deploy[:deploy_to]}/shared/cache" do
+    recursive true
+    action :create
+    only_if do
+      !File.exists?("#{deploy[:deploy_to]}/shared/cache")
+    end
+  end
+
 
   ruby_block "change HOME to #{deploy[:home]} for source checkout" do
     block do
@@ -188,7 +196,19 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-                :fastcache_storage => node[:fastcache_storage]
+                :fastcache_storage => node[:fastcache_storage],
+                :fastcache_path => ::File.join(node[:deploy][application][:deploy_to],'shared', 'cache'),
+                :fastcache_disabled => node[:fastcache_storage] || 'false',
+                :fastcache_memcached => node[:fastcache_memcached] || {:host  => "127.0.0.1",
+                                                                       :port  =>  "11211",
+                                                                       :timeout => "1"
+                },
+                :fastcache_redis => node[:fastcache_redis] || {:host  => "127.0.0.1",
+                                                               :port  =>  "",
+                                                               :password  =>  "",
+                                                               :database  =>  "",
+                                                               :timeout   =>  ""
+                }
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

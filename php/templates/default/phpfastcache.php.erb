@@ -18,23 +18,23 @@ phpFastCache::$config = array(
 "htaccess"      => true,
 
 // path to cache folder, leave it blank for auto detect
-"path"      =>  "",
+"path"      =>  "<%= @fastcache_path %>",
 "securityKey"   =>  "auto", // auto will use domain name, set it to 1 string if you use alias domain name
 
 // MEMCACHE
 
 "memcache"        =>  array(
-array("127.0.0.1",11211,1),
+array("<%= @fastcache_memcached[:host] %>",<%= @fastcache_memcached[:port] %>,<%= @fastcache_memcached[:timeout] %>),
 //  array("new.host.ip",11211,1),
 ),
 
 // REDIS
 "redis"         =>  array(
-"host"  => "127.0.0.1",
-"port"  =>  "",
-"password"  =>  "",
-"database"  =>  "",
-"timeout"   =>  ""
+"host"  => "<%= @fastcache_redis[:host] %>",
+"port"  =>  "<%= @fastcache_redis[:port] %>",
+"password"  =>  "<%= @fastcache_redis[:password] %>",
+"database"  =>  "<%= @fastcache_redis[:database] %>",
+"timeout"   =>  "<%= @fastcache_redis[:timeout] %>"
 ),
 
 "extensions"    =>  array(),
@@ -49,6 +49,6 @@ array("127.0.0.1",11211,1),
 
 
 // temporary disabled phpFastCache
-phpFastCache::$disabled = false;
+phpFastCache::$disabled = <%= @fastcache_disabled %>;
 
 
