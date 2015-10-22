@@ -58,7 +58,7 @@ node[:deploy].each do |application, deploy|
         :fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
         :fastcache_storage => node[:fastcache_storage],
         :fastcache_path => ::File.join(deploy[:deploy_to],'shared', 'cache'),
-        :fastcache_disabled => node[:fastcache_storage] || 'false',
+        :fastcache_disabled => node[:fastcache_disabled] || 'false',
         :fastcache_memcached => node[:fastcache_memcached] || {:host  => "127.0.0.1", :port  =>  "11211", :timeout => "1"},
         :fastcache_redis => node[:fastcache_redis] || {:host  => "127.0.0.1",
                                                        :port  =>  "",

@@ -198,7 +198,7 @@ define :opsworks_deploy do
                 :fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
                 :fastcache_storage => node[:fastcache_storage],
                 :fastcache_path => ::File.join(node[:deploy][application][:deploy_to],'shared', 'cache'),
-                :fastcache_disabled => node[:fastcache_storage] || 'false',
+                :fastcache_disabled => node[:fastcache_disabled] || 'false',
                 :fastcache_memcached => node[:fastcache_memcached] || {:host  => "127.0.0.1",
                                                                        :port  =>  "11211",
                                                                        :timeout => "1"
