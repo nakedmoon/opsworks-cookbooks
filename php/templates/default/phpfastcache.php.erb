@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . "<%= @fastcache_lib %>");
 
 // OK, setup your cache
 phpFastCache::$config = array(
-    "storage"   =>  '<% @fastcache_storage %>', // auto, files, sqlite, apc, cookie, memcache, memcached, predis, redis, wincache, xcache
+    "storage"   =>  '<%= @fastcache_storage %>', // auto, files, sqlite, apc, cookie, memcache, memcached, predis, redis, wincache, xcache
     "default_chmod" => 0777, // For security, please use 0666 for module and 0644 for cgi.
 
 
