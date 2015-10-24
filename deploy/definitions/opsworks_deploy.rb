@@ -289,7 +289,8 @@ define :opsworks_deploy do
             variables(
                 :export_path => "#{deploy[:deploy_to]}/shared/export",
                 :log_dir => ::File.join(node[:deploy][application][:current_path], 'log'),
-                :fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
+                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
+                :aws_include => ::File.join(node[:deploy][application][:current_path], 'aws.php'),
                 :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'rollbar.php'),
                 :slack_include => ::File.join(node[:deploy][application][:current_path], 'slack.php'),
                 :db_include => ::File.join(node[:deploy][application][:current_path], 'db.php')
@@ -306,9 +307,10 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :service_base_url => node[:service_url],
-                :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
-                :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
-                :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
+                :aws_include => ::File.join(node[:deploy][application][:current_path], 'aws.php'),
+                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
+                :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'rollbar.php'),
+                :slack_include => ::File.join(node[:deploy][application][:current_path], 'slack.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

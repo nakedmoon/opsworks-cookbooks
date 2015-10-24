@@ -164,7 +164,8 @@ node[:deploy].each do |application, deploy|
     variables(
         :export_path => "#{deploy[:deploy_to]}/shared/export",
         :log_dir => ::File.join(deploy[:deploy_to], 'log'),
-        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
         :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php'),
         :db_include => ::File.join(deploy[:deploy_to], 'current', 'db.php')
@@ -184,7 +185,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :service_base_url => node[:service_url],
-        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
         :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
     )
