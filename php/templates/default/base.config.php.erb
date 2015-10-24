@@ -3,6 +3,7 @@
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
+include '<%= @vendor_autoload %>';
 require_once '<%= @roolbar_lib %>';
 
 $config = array(
@@ -12,6 +13,13 @@ $config = array(
     'branch' => '<%= @rollbar_branch %>',
     'included_errno' => <%= @rollbar_level %>
 );
+
+use TailoredTunes\SlackNotifier;
+
+$slackWebhookUrl = '<%= @slack_webhook_url %>'
+$slackChannel = '<%= @slack_channel %>'
+$slack = new SlackNotifier($slackWebhookUrl);
+
 
 define("SERVICE_URL","<%= @service_url %>");
 
