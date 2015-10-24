@@ -6,46 +6,34 @@ require_once("<%= @php_fastcache_lib %>");
 phpFastCache::$config = array(
     "storage"   =>  '<%= @php_fastcache[:storage] %>', // auto, files, sqlite, apc, cookie, memcache, memcached, predis, redis, wincache, xcache
     "default_chmod" => 0777, // For security, please use 0666 for module and 0644 for cgi.
+    "htaccess" => true,
+    "path" =>  "<%= @php_fastcache_path %>",
+    "securityKey" =>  "auto", // auto will use domain name, set it to 1 string if you use alias domain name
 
 
-/*
-* OTHERS
-*/
 
-// create .htaccess to protect cache folder
-// By default the cache folder will try to create itself outside your public_html.
-// However an htaccess also created in case.
-"htaccess"      => true,
+<% if @php_fastcache[:memcached].is_a?(Hash) %>
+    // MEMCACHE
 
-// path to cache folder, leave it blank for auto detect
-"path"      =>  "<%= @php_fastcache_path %>",
-"securityKey"   =>  "auto", // auto will use domain name, set it to 1 string if you use alias domain name
-php_fastcache<% if @php_fastcache[:memcached].is_a?(Hash) %>
-// MEMCACHE
-
-"memcache"        =>  array(phpfcarray("<%= @php_fastcache[:memcached][:host] %>",<%= @php_fastcache[:memcached][:port] %>,<%= @php_fastcache[:memcached][:timeout] %>),
-//  array("new.host.ip",11211,1),
-),
+    "memcache" =>  array(
+        array("<%= @php_fastcache[:memcached][:host] %>",<%= @php_fastcache[:memcached][:port] %>,<%= @php_fastcache[:memcached][:timeout] %>),
+    ),
 
 <% end %>
-phpfc<% if @php_fastcache[:redis].is_a?(Hash) %>
-phpfc// REDIS
-"redis"         =>  array(
-"host"  => "<%= @php_fastcache[:redis][:host] %>",
-"port"  =>  "<%= @php_fastcache[:redis][:port] %>",
-"password"  =>  "<%= @php_fastcache[:redis][:password] %>",
-"database"  =>  "<%= @php_fastcache[:redis][:database] %>",
-"timeout"   =>  "<%= @php_fastcache[:redis][:timeout] %>"
-),
+
+<% if @php_fastcache[:redis].is_a?(Hash) %>
+    // REDIS
+    "redis"         =>  array(
+        "host"  => "<%= @php_fastcache[:redis][:host] %>",
+        "port"  =>  "<%= @php_fastcache[:redis][:port] %>",
+        "password"  =>  "<%= @php_fastcache[:redis][:password] %>",
+        "database"  =>  "<%= @php_fastcache[:redis][:database] %>",
+        "timeout"   =>  "<%= @php_fastcache[:redis][:timeout] %>"
+    ),
 <% end %>
 
-"extensions"    =>  array(),
-
-
-/*
-* Fall back when old driver is not support
-*/
-"fallback"  => "files",
+    "extensions"    =>  array(),
+    "fallback"  => "files",
 
 );
 
