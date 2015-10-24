@@ -21,8 +21,8 @@
     $joomlaDb       = '<%= @database[:joomladb] %>';
     $hyenaUserDb     = '<%= @database[:hyena_app_user][:username] %>';
     $hyenaPwdDb       = '<%= @database[:hyena_app_user][:password] %>';
-    $slackWebhookUrl = '<%= @slack_webhook_url %>'
-    $slackChannel = '<%= @slack_channel %>'
+    $slackWebhookUrl = '<%= @slack_webhook_url %>';
+    $slackChannel = '<%= @slack_channel %>';
     $slack = new SlackNotifier($slackWebhookUrl);
 
 ?>
