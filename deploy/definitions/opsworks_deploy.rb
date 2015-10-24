@@ -233,6 +233,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :php_fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
+                :php_fastcache_path => "#{node[:deploy][application][:deploy_to]}/shared/cache",
                 :php_fastcache => node[:php_fastcache]
             )
             only_if do
