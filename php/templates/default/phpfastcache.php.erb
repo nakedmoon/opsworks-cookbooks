@@ -4,7 +4,7 @@ require_once("<%= @fastcache_lib %>");
 
 // OK, setup your cache
 phpFastCache::$config = array(
-    "storage"   =>  '<%= @fastcache_storage %>', // auto, files, sqlite, apc, cookie, memcache, memcached, predis, redis, wincache, xcache
+    "storage"   =>  '<%= @php_fastcache[:storage] %>', // auto, files, sqlite, apc, cookie, memcache, memcached, predis, redis, wincache, xcache
     "default_chmod" => 0777, // For security, please use 0666 for module and 0644 for cgi.
 
 
@@ -18,24 +18,26 @@ phpFastCache::$config = array(
 "htaccess"      => true,
 
 // path to cache folder, leave it blank for auto detect
-"path"      =>  "<%= @fastcache_path %>",
+"path"      =>  "<%= @php_fastcache[:path] %>",
 "securityKey"   =>  "auto", // auto will use domain name, set it to 1 string if you use alias domain name
-
+php_fastcache<% if @php_fastcache[:memcached].is_a?(Hash) %>
 // MEMCACHE
 
-"memcache"        =>  array(
-array("<%= @fastcache_memcached[:host] %>",<%= @fastcache_memcached[:port] %>,<%= @fastcache_memcached[:timeout] %>),
+"memcache"        =>  array(phpfcarray("<%= @php_fastcache[:memcached][:host] %>",<%= @php_fastcache[:memcached][:port] %>,<%= @php_fastcache[:memcached][:timeout] %>),
 //  array("new.host.ip",11211,1),
 ),
 
-// REDIS
+<% end %>
+phpfc<% if @php_fastcache[:redis].is_a?(Hash) %>
+phpfc// REDIS
 "redis"         =>  array(
-"host"  => "<%= @fastcache_redis[:host] %>",
-"port"  =>  "<%= @fastcache_redis[:port] %>",
-"password"  =>  "<%= @fastcache_redis[:password] %>",
-"database"  =>  "<%= @fastcache_redis[:database] %>",
-"timeout"   =>  "<%= @fastcache_redis[:timeout] %>"
+"host"  => "<%= @php_fastcache[:redis][:host] %>",
+"port"  =>  "<%= @php_fastcache[:redis][:port] %>",
+"password"  =>  "<%= @php_fastcache[:redis][:password] %>",
+"database"  =>  "<%= @php_fastcache[:redis][:database] %>",
+"timeout"   =>  "<%= @php_fastcache[:redis][:timeout] %>"
 ),
+<% end %>
 
 "extensions"    =>  array(),
 
@@ -49,6 +51,6 @@ array("<%= @fastcache_memcached[:host] %>",<%= @fastcache_memcached[:port] %>,<%
 
 
 // temporary disabled phpFastCache
-phpFastCache::$disabled = <%= @fastcache_disabled %>;
+phpFastCache::$disabled = <%= @php_fastcache[:disabled] %>;
 
 

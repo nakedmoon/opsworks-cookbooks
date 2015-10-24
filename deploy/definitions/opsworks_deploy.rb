@@ -171,11 +171,9 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :rollbar_level => node[:rollbar_level],
                 :roolbar_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
                 :env => node[:hyena_env] || :development,
-                :rollbar_token => node[:rollbar_token],
-                :rollbar_branch => deploy[:scm][:revision]
+                :rollbar => node[:rollbar]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
@@ -190,8 +188,7 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :slack_webhook_url => node[:slack_webhook_url],
-                :slack_channel => node[:slack_channel],
+                :slack => node[:slack],
                 :vendor_autoload => ::File.join(node[:deploy][application][:current_path], 'vendor', 'autoload.php')
             )
             only_if do
@@ -220,20 +217,8 @@ define :opsworks_deploy do
             owner node[:deploy][application][:user]
             group node[:deploy][application][:group]
             variables(
-                :fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-                :fastcache_storage => node[:fastcache_storage],
-                :fastcache_path => ::File.join(node[:deploy][application][:deploy_to],'shared', 'cache'),
-                :fastcache_disabled => node[:fastcache_disabled] || 'false',
-                :fastcache_memcached => node[:fastcache_memcached] || {:host  => "127.0.0.1",
-                                                                       :port  =>  "11211",
-                                                                       :timeout => "1"
-                },
-                :fastcache_redis => node[:fastcache_redis] || {:host  => "127.0.0.1",
-                                                               :port  =>  "",
-                                                               :password  =>  "",
-                                                               :database  =>  "",
-                                                               :timeout   =>  ""
-                }
+                :php_fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
+                :php_fastcache => node[:php_fastcache]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

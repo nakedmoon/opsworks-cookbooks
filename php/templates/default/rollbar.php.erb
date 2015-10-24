@@ -3,11 +3,11 @@
     require_once '<%= @roolbar_lib %>';
 
     $config = array(
-        'access_token' => '<%= @rollbar_token %>',
+        'access_token' => '<%= @rollbar[:token] %>',
         'environment' => '<%= @env %>',
         'root' => '<%= @current_dir %>',
-        'branch' => '<%= @rollbar_branch %>',
-        'included_errno' => <%= @rollbar_level %>
+        'branch' => '<%= @rollbar[:branch] %>',
+        'included_errno' => <%= @rollbar[:level] %>
     );
 
     Rollbar::init($config);
