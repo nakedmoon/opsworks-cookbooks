@@ -290,7 +290,10 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :export_path => "#{deploy[:deploy_to]}/shared/export",
-                :log_dir => ::File.join(node[:deploy][application][:current_path], 'log')
+                :log_dir => ::File.join(node[:deploy][application][:current_path], 'log'),
+                :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+                :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
+                :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
@@ -303,7 +306,10 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :service_base_url => node[:service_url]
+                :service_base_url => node[:service_url],
+                :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+                :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
+                :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
