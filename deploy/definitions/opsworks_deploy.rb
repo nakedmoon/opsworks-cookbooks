@@ -171,6 +171,7 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
+                :current_dir => deploy[:deploy_to],
                 :roolbar_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
                 :rollbar => node[:rollbar]
             )

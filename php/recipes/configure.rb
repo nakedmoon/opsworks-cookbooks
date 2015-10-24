@@ -50,7 +50,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :roolbar_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
-        :rollbar => node[:rollbar]
+        :rollbar => node[:rollbar],
+        :current_dir => deploy[:deploy_to]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
