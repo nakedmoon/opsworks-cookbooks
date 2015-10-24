@@ -50,8 +50,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :roolbar_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
-        :env => node[:hyena_env] || :development,
-        :rollbar => node[:rollbar],
+        :rollbar => node[:rollbar]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -132,8 +131,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :error_level => node[:php_error_level],
-        :time_zone => node[:php_timezone]
+        :php_config => node[:php_config]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

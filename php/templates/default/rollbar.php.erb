@@ -4,7 +4,7 @@
 
     $config = array(
         'access_token' => '<%= @rollbar[:token] %>',
-        'environment' => '<%= @env %>',
+        'environment' => '<%= @rollbar[:env] %>',
         'root' => '<%= @current_dir %>',
         'branch' => '<%= @rollbar[:branch] %>',
         'included_errno' => <%= @rollbar[:level] %>

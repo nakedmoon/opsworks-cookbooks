@@ -172,7 +172,6 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :roolbar_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
-                :env => node[:hyena_env] || :development,
                 :rollbar => node[:rollbar]
             )
             only_if do
@@ -231,8 +230,7 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :error_level => node[:php_error_level],
-                :time_zone => node[:php_timezone]
+                :php_config => node[:php_config]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
