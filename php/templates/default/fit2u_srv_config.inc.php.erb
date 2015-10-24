@@ -21,6 +21,9 @@ return $ppp;
 }
 
 // Stati proposta
+require_once '<%= @fastcache_include %>';
+require_once '<%= @rollbar_include %>';
+require_once '<%= @slack_include %>';
 require_once("const_proposte.inc.php");
 include("../db.php");
 

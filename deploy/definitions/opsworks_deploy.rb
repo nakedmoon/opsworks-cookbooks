@@ -163,6 +163,42 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          # write out rollbar.php
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/rollbar.php" do
+            cookbook 'php'
+            source 'rollbar.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :rollbar_level => node[:rollbar_level],
+                :roolbar_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
+                :env => node[:hyena_env] || :development,
+                :rollbar_token => node[:rollbar_token],
+                :rollbar_branch => deploy[:scm][:revision]
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+
+          # write out slack.php
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/slack.php" do
+            cookbook 'php'
+            source 'slack.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :slack_webhook_url => node[:slack_webhook_url],
+                :slack_channel => node[:slack_channel],
+                :vendor_autoload => ::File.join(node[:deploy][application][:current_path], 'vendor', 'autoload.php')
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+
           template "#{node[:deploy][application][:deploy_to]}/shared/config/db.php" do
             cookbook 'php'
             source 'db.php.erb'
@@ -171,21 +207,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :database => deploy[:database],
-                :current_dir => node[:deploy][application][:current_path],
-                :rollbar_level => node[:rollbar_level],
-                :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
-                                            'vendor',
-                                            'rollbar',
-                                            'rollbar',
-                                            'src',
-                                            'rollbar.php'
-                ),
-                :env => node[:hyena_env] || :development,
-                :rollbar_token => node[:rollbar_token],
-                :fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
-                :slack_webhook_url => node[:slack_webhook_url],
-                :slack_channel => node[:slack_channel],
-                :vendor_autoload => ::File.join(node[:deploy][application][:current_path], 'vendor', 'autoload.php')
+                :current_dir => node[:deploy][application][:current_path]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

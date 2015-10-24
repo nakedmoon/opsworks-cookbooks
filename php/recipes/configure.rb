@@ -34,13 +34,40 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :current_dir => deploy[:deploy_to],
+        :current_dir => deploy[:deploy_to]
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  # write out rollbar.php
+  template "#{deploy[:deploy_to]}/shared/config/rollbar.php" do
+    cookbook 'php'
+    source 'rollbar.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
         :rollbar_level => node[:rollbar_level],
         :roolbar_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'rollbar', 'rollbar', 'src', 'rollbar.php'),
         :env => node[:hyena_env] || :development,
         :rollbar_token => node[:rollbar_token],
-        :rollbar_branch => deploy[:scm][:revision],
-        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :rollbar_branch => deploy[:scm][:revision]
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  # write out slack.php
+  template "#{deploy[:deploy_to]}/shared/config/slack.php" do
+    cookbook 'php'
+    source 'slack.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
         :slack_webhook_url => node[:slack_webhook_url],
         :slack_channel => node[:slack_channel],
         :vendor_autoload => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'autoload.php')
@@ -134,7 +161,10 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :export_path => "#{deploy[:deploy_to]}/shared/export",
-        :log_dir => ::File.join(deploy[:deploy_to], 'log')
+        :log_dir => ::File.join(deploy[:deploy_to], 'log'),
+        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
+        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -150,7 +180,10 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :service_base_url => node[:service_url]
+        :service_base_url => node[:service_url],
+        :fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
+        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
+        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

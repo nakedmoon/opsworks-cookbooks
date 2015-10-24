@@ -1,28 +1,9 @@
 <?php
 
-    include '<%= @vendor_autoload %>';
-    require_once '<%= @fastcache_include %>';
-    require_once '<%= @roolbar_lib %>';
-
-    $config = array(
-        'access_token' => '<%= @rollbar_token %>',
-        'environment' => '<%= @env %>',
-        'root' => '<%= @current_dir %>',
-        'branch' => '<%= @rollbar_branch %>',
-        'included_errno' => <%= @rollbar_level %>
-    );
-
-    Rollbar::init($config);
-
-    use TailoredTunes\SlackNotifier;
-
     $hyenaServer = '<%= @database[:host] %>';
     $hyenaDb       = '<%= @database[:hyenadb] %>';
     $joomlaDb       = '<%= @database[:joomladb] %>';
     $hyenaUserDb     = '<%= @database[:hyena_app_user][:username] %>';
     $hyenaPwdDb       = '<%= @database[:hyena_app_user][:password] %>';
-    $slackWebhookUrl = '<%= @slack_webhook_url %>';
-    $slackChannel = '<%= @slack_channel %>';
-    $slack = new SlackNotifier($slackWebhookUrl);
 
 ?>
