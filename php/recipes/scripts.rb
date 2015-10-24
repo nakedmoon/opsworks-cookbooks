@@ -24,7 +24,10 @@ node[:deploy].each do |application, deploy|
         ),
         :env => node[:hyena_scripts_env] || :development,
         :rollbar_token => node[:rollbar_token],
-        :rollbar_branch => deploy[:scm][:revision]
+        :rollbar_branch => deploy[:scm][:revision],
+        :slack_webhook_url => node[:slack_webhook_url],
+        :slack_channel => node[:slack_channel],
+        :vendor_autoload => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'autoload.php')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
