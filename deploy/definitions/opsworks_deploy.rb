@@ -182,7 +182,10 @@ define :opsworks_deploy do
                 ),
                 :env => node[:hyena_env] || :development,
                 :rollbar_token => node[:rollbar_token],
-                :fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php')
+                :fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
+                :slack_webhook_url => node[:slack_webhook_url],
+                :slack_channel => node[:slack_channel],
+                :vendor_autoload => ::File.join(node[:deploy][application][:current_path], 'vendor', 'autoload.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
