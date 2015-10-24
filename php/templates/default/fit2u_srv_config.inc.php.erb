@@ -21,11 +21,14 @@ return $ppp;
 }
 
 // Stati proposta
+require_once("const_proposte.inc.php");
+
+// Configuration
 require_once '<%= @fastcache_include %>';
 require_once '<%= @rollbar_include %>';
 require_once '<%= @slack_include %>';
-require_once("const_proposte.inc.php");
-include("../db.php");
+require_once '<%= @db_include %>';
+
 
 define("NEW_MODEL_BEGIN_DATE", "2014-03-10 00:00:00");
 
