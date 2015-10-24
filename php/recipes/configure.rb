@@ -73,6 +73,22 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  # write out aws.php
+  template "#{deploy[:deploy_to]}/shared/config/aws.php" do
+    cookbook 'php'
+    source 'aws.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :s3_archive => node[:s3_archive],
+        :vendor_autoload => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'autoload.php')
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
   # write out phpfastcache.php
   template "#{deploy[:deploy_to]}/shared/config/phpfastcache.php" do
     cookbook 'php'

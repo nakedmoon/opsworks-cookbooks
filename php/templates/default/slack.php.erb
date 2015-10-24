@@ -1,6 +1,6 @@
 <?php
 
-    include '<%= @vendor_autoload %>';
+    require_once '<%= @vendor_autoload %>';
 
     use TailoredTunes\SlackNotifier;
     $slackWebhookUrl = '<%= @slack[:webhook_url] %>';

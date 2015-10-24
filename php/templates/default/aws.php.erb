@@ -1,5 +1,9 @@
 <?php
 
+    require_once '<%= @vendor_autoload %>';
+
+    use Aws\S3\S3Client;
+
     $awsS3Bucket = '<%= @s3_archive[:bucket] %>';
     $awsS3Key = '<%= @s3_archive[:key] %>';
     $awsS3Secret = '<%= @s3_archive[:secret] %>';

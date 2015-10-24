@@ -179,6 +179,21 @@ define :opsworks_deploy do
             end
           end
 
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/aws.php" do
+            cookbook 'php'
+            source 'aws.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :s3_archive => node[:s3_archive],
+                :vendor_autoload => ::File.join(node[:deploy][application][:current_path], 'vendor', 'autoload.php')
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+
           # write out slack.php
           template "#{node[:deploy][application][:deploy_to]}/shared/config/slack.php" do
             cookbook 'php'
