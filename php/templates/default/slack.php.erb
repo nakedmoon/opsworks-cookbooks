@@ -1,0 +1,11 @@
+<?php
+
+include '<%= @vendor_autoload %>';
+
+use TailoredTunes\SlackNotifier;
+
+$slackWebhookUrl = '<%= @slack[:webhook_url] %>';
+$slackChannel = '<%= @slack[:channel] %>';
+$slack = new SlackNotifier($slackWebhookUrl);
+
+?>

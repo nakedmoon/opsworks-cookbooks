@@ -1,0 +1,14 @@
+<?php
+
+
+require_once '<%= @roolbar_lib %>';
+
+$config = array(
+    'access_token' => '<%= @rollbar[:token] %>',
+    'environment' => '<%= @rollbar[:env] %>',
+    'root' => '<%= @current_dir %>',
+    'branch' => '<%= @rollbar[:branch] %>',
+    'included_errno' => <%= @rollbar[:level] %>
+);
+
+?>

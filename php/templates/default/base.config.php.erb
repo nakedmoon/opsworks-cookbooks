@@ -1,24 +1,8 @@
 <?php
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
 
-include '<%= @vendor_autoload %>';
-require_once '<%= @roolbar_lib %>';
-
-$config = array(
-    'access_token' => '<%= @rollbar_token %>',
-    'environment' => '<%= @env %>',
-    'root' => '<%= @current_dir %>',
-    'branch' => '<%= @rollbar_branch %>',
-    'included_errno' => <%= @rollbar_level %>
-);
-
-use TailoredTunes\SlackNotifier;
-
-$slackWebhookUrl = '<%= @slack_webhook_url %>';
-$slackChannel = '<%= @slack_channel %>';
-$slack = new SlackNotifier($slackWebhookUrl);
+require_once "rollbar.php";
+require_once "slack.php";
 
 
 define("SERVICE_URL","<%= @service_url %>");

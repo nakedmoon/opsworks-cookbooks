@@ -162,22 +162,36 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :shared_path => File.join(node[:deploy][application][:deploy_to], "shared"),
-                :service_url => node[:service_url],
-                :current_dir => node[:deploy][application][:current_path],
-                :rollbar_level => node[:rollbar_level],
-                :roolbar_lib => ::File.join(node[:deploy][application][:current_path],
-                                           'vendor',
-                                           'rollbar',
-                                           'rollbar',
-                                           'src',
-                                           'rollbar.php'
-                ),
-                :env => node[:hyena_scripts_env] || :development,
-                :rollbar_token => node[:rollbar_token],
-                :rollbar_branch => node[:deploy][application][:scm][:revision],
-                :slack_webhook_url => node[:slack_webhook_url],
-                :slack_channel => node[:slack_channel],
+                :service_url => node[:service_url]
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/slack.php" do
+            cookbook 'php'
+            source 'slack.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :slack => node[:slack],
                 :vendor_autoload => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'autoload.php')
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/rollbar.php" do
+            cookbook 'php'
+            source 'rollbar.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :current_dir => node[:deploy][application][:current_path],
+                :roolbar_lib => ::File.join(node[:deploy][application][:current_path],'vendor','rollbar','rollbar','src','rollbar.php'),
+                :rollbar => node[:rollbar]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
