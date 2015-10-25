@@ -24,11 +24,11 @@ node[:deploy].each do |application, deploy|
     app application
   end
 
-  [:export].each do |sym_dir|
+  [:export, :cache].each do |sym_dir|
     sym_dir_path = ::File.join(node[:deploy][application][:current_path],sym_dir.to_s)
     sym_dir_dest = ::File.join(node[:deploy][application][:deploy_to], 'shared', sym_dir.to_s)
     directory sym_dir_path do
-      action :remove
+      action :delete
       recursive true
       Chef::Log.debug("Remove dir #{sym_dir_path} before linking")
       only_if do
