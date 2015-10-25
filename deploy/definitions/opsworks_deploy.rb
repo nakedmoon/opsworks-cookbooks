@@ -1,3 +1,5 @@
+Chef::Log.level = :debug
+
 define :opsworks_deploy do
   application = params[:app]
   deploy = params[:deploy_data]
@@ -70,8 +72,13 @@ define :opsworks_deploy do
   end
 
   node[:htaccess_deny].each do |dir|
-    link ::File.join(node[:deploy][application][:current_path], dir, '.htaccess') do
-      to ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess-deny')
+    link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
+    link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess-deny')
+    Chef::Log.debug("Linking #{link_name} to #{link_dest}")
+    link link_name do
+      to link_dest
+      owner deploy[:user]
+      group deploy[:group]
       action :create
       link_type :symbolic
     end
