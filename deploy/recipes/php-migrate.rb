@@ -20,7 +20,7 @@ node[:deploy].each do |application, deploy|
   
   execute "migrate db with phinx" do
     cwd deploy[:current_path]
-    command "php vendor/bin/phinx migrate --configuration=#{::File.join(deploy[:current_path], 'config', 'phinx.yml')} -e #{php_env}"
+    command "php vendor/bin/phinx migrate -e #{php_env}"
     action :run
     
     only_if do 

@@ -1,7 +1,7 @@
 php_value error_reporting <%= @php_config[:error_level] %>
 php_value date.timezone <%= @php_config[:timezone] %>
 
-<FilesMatch "(\.(htaccess|htpasswd|bak|jpa|bat|config|sql|phps|fla|md|psd|ini|log|sh|inc|swp|dist)|~|init|composer\.json|composer\.lock)$">
+<FilesMatch "(\.(htaccess|htpasswd|bak|jpa|bat|config|sql|phps|fla|md|psd|ini|log|sh|inc|swp|dist|yml)|~|init|phinx\.yml|composer\.json|composer\.lock)$">
   Order allow,deny
   Deny from all
   Satisfy All
