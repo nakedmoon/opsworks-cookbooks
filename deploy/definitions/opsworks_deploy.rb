@@ -314,16 +314,6 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
-          node[:htaccess_deny].each do |dir|
-            link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
-            link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess_deny')
-            Chef::Log.debug("Linking #{link_name} to #{link_dest}")
-            link link_name do
-              to link_dest
-              action :create
-              link_type :symbolic
-            end
-          end
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
             OpsWorks::NodejsConfiguration.npm_install(application, node[:deploy][application], release_path, node[:opsworks_nodejs][:npm_install_options])
