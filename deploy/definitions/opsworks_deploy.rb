@@ -69,6 +69,15 @@ define :opsworks_deploy do
     end
   end
 
+  node[:htaccess_deny].each do |dir|
+    link ::File.join(node[:deploy][application][:current_path], dir, '.htaccess') do
+      to ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess-deny')
+      action :create
+      link_type :symbolic
+    end
+  end
+
+
 
   ruby_block "change HOME to #{deploy[:home]} for source checkout" do
     block do
