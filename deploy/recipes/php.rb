@@ -23,5 +23,20 @@ node[:deploy].each do |application, deploy|
     deploy_data deploy
     app application
   end
+
+
+  node[:htaccess_deny].each do |dir|
+    link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
+    link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess-deny')
+    Chef::Log.debug("Linking #{link_name} to #{link_dest}")
+    link link_name do
+      to link_dest
+      owner deploy[:user]
+      group deploy[:group]
+      action :create
+      link_type :symbolic
+    end
+  end
+
 end
 
