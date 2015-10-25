@@ -99,7 +99,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :php_fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-        :php_fastcache_path => "#{deploy[:deploy_to]}/shared/cacche",
+        :php_fastcache_path => "#{deploy[:deploy_to]}/shared/cache",
         :php_fastcache => node[:php_fastcache]
     )
     only_if do
@@ -156,6 +156,19 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  # write out .htaccess_deny
+  template "#{deploy[:deploy_to]}/shared/config/.htaccess_deny" do
+    cookbook 'php'
+    source '.htaccess_deny.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables()
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
   # write out fit2u_srv_config.inc.php
   template "#{deploy[:deploy_to]}/shared/config/fit2u_srv_config.inc.php" do
     cookbook 'php'
@@ -166,11 +179,11 @@ node[:deploy].each do |application, deploy|
     variables(
         :export_path => "#{deploy[:deploy_to]}/shared/export",
         :log_dir => ::File.join(deploy[:deploy_to], 'log'),
-        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
-        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'aws.php'),
-        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
-        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php'),
-        :db_include => ::File.join(deploy[:deploy_to], 'current', 'db.php')
+        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'config','phpfastcache.php'),
+        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config','aws.php'),
+        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config','rollbar.php'),
+        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config','slack.php'),
+        :db_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'db.php')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -187,10 +200,10 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :service_base_url => node[:service_url],
-        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'phpfastcache.php'),
-        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'aws.php'),
-        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'rollbar.php'),
-        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'slack.php')
+        :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'phpfastcache.php'),
+        :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'aws.php'),
+        :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'rollbar.php'),
+        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'slack.php')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

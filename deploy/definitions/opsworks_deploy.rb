@@ -253,6 +253,17 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/.htaccess_deny" do
+            cookbook 'php'
+            source '.htaccess_deny.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables()
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
           template "#{node[:deploy][application][:deploy_to]}/shared/config/configuration.php" do
             cookbook 'php'
             source 'configuration.php.erb'
@@ -291,11 +302,11 @@ define :opsworks_deploy do
             variables(
                 :export_path => "#{deploy[:deploy_to]}/shared/export",
                 :log_dir => ::File.join(node[:deploy][application][:current_path], 'log'),
-                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
-                :aws_include => ::File.join(node[:deploy][application][:current_path], 'aws.php'),
-                :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'rollbar.php'),
-                :slack_include => ::File.join(node[:deploy][application][:current_path], 'slack.php'),
-                :db_include => ::File.join(node[:deploy][application][:current_path], 'db.php')
+                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'config', 'phpfastcache.php'),
+                :aws_include => ::File.join(node[:deploy][application][:current_path], 'config','aws.php'),
+                :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
+                :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php'),
+                :db_include => ::File.join(node[:deploy][application][:current_path], 'config', 'db.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
@@ -309,10 +320,10 @@ define :opsworks_deploy do
             group deploy[:group]
             variables(
                 :service_base_url => node[:service_url],
-                :aws_include => ::File.join(node[:deploy][application][:current_path], 'aws.php'),
-                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'phpfastcache.php'),
-                :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'rollbar.php'),
-                :slack_include => ::File.join(node[:deploy][application][:current_path], 'slack.php')
+                :aws_include => ::File.join(node[:deploy][application][:current_path], 'config','aws.php'),
+                :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'config','phpfastcache.php'),
+                :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
+                :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
