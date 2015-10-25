@@ -23,5 +23,24 @@ node[:deploy].each do |application, deploy|
     deploy_data deploy
     app application
   end
+
+  [:export].each do |sym_dir|
+    sym_dir_path = ::File.join(node[:deploy][application][:current_path],sym_dir.to_s)
+    sym_dir_dest = ::File.join(node[:deploy][application][:deploy_to], 'shared', sym_dir.to_s)
+    directory sym_dir_path do
+      action :delete
+      recursive true
+      Chef::Log.debug("Remove dir #{sym_dir_path} before linking")
+      only_if do
+        File.exists?(sym_dir_path) && File.directory?(sym_dir_path)
+      end
+    end
+    link sym_dir_path do
+      to sym_dir_dest
+      action :create
+      link_type :symbolic
+    end
+  end
+
 end
 
