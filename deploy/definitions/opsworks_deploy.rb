@@ -77,17 +77,6 @@ define :opsworks_deploy do
     end
   end
 
-  node[:htaccess_deny].each do |dir|
-    link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
-    link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess_deny')
-    Chef::Log.debug("Linking #{link_name} to #{link_dest}")
-    link link_name do
-      to link_dest
-      action :create
-      link_type :symbolic
-    end
-  end
-
   # setup deployment & checkout
   if deploy[:scm] && deploy[:scm][:scm_type] != 'other'
     Chef::Log.debug("Checking out source code of application #{application} with type #{deploy[:application_type]}")
@@ -323,6 +312,16 @@ define :opsworks_deploy do
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
+          node[:htaccess_deny].each do |dir|
+            link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
+            link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess_deny')
+            Chef::Log.debug("Linking #{link_name} to #{link_dest}")
+            link link_name do
+              to link_dest
+              action :create
+              link_type :symbolic
             end
           end
         elsif deploy[:application_type] == 'nodejs'
