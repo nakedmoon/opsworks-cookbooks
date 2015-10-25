@@ -148,6 +148,23 @@ define :opsworks_deploy do
         elsif deploy[:application_type] == 'aws-flow-ruby'
           OpsWorks::RailsConfiguration.bundle(application, node[:deploy][application], release_path)
         elsif deploy[:application_type] == 'php'
+          # write out opsworks.php
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/opsworks.php" do
+            cookbook 'php'
+            source 'opsworks.php.erb'
+            mode '0660'
+            owner node[:deploy][application][:user]
+            group node[:deploy][application][:group]
+            variables(
+                :database => node[:deploy][application][:database],
+                :memcached => node[:deploy][application][:memcached],
+                :layers => node[:opsworks][:layers],
+                :stack_name => node[:opsworks][:stack][:name]
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
           # write out rollbar.php
           template "#{node[:deploy][application][:deploy_to]}/shared/config/rollbar.php" do
             cookbook 'php'

@@ -25,7 +25,7 @@ node[:deploy].each do |application, deploy|
   end
 
   node[:htaccess_deny].each do |dir|
-    link_name = ::File.join(node[:deploy][application][:current_path], dir, '.htaccess')
+    link_name = ::File.join(application[:current_path], dir, '.htaccess')
     link_dest = ::File.join(deploy[:deploy_to], 'shared', 'config', '.htaccess_deny')
     link link_name do
       to link_dest
