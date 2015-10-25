@@ -24,13 +24,22 @@ node[:deploy].each do |application, deploy|
     app application
   end
 
-  "#{deploy[:deploy_to]}/shared/export"
-
-  link ::File.join(node[:deploy][application][:current_path],'export') do
-    to "#{deploy[:deploy_to]}/shared/export"
-    action :create
-    link_type :symbolic
-    Chef::Log.debug("Linking export dir")
+  [:export].each do |sym_dir|
+    sym_dir_path = ::File.join(node[:deploy][application][:current_path],sym_dir.to_s)
+    sym_dir_dest = ::File.join(node[:deploy][application][:deploy_to], 'shared', sym_dir.to_s)
+    directory sym_dir_path do
+      action :remove
+      recursive true
+      Chef::Log.debug("Remove dir #{sym_dir_path} before linking")
+      only_if do
+        File.exists?(sym_dir_path) && File.directory?(sym_dir_path)
+      end
+    end
+    link sym_dir_path do
+      to sym_dir_dest
+      action :create
+      link_type :symbolic
+    end
   end
 
   node[:htaccess_deny].each do |dir|
