@@ -60,9 +60,7 @@ node[:deploy].each do |application, deploy|
 
     end
 
-    ignore_tables = (node[:mysql_import][:ignore_tables] || []).map{|t| "--ignore-table=#{t}"}.join(' ')
-
-
+    ignore_tables = node[:mysql_import].fetch(:ignore_tables){[]}.map{|t| "--ignore-table=#{t}"}.join(' ')
     execute "import remote database #{db}" do
       mysql_dump_command = sprintf(mysql_dump_f, node[:mysql_import][:host],
                                    node[:mysql_import][:username],

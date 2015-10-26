@@ -198,7 +198,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :service_base_url => node[:service_url],
+        :service_base_url => node.fetch(:service_url){node[:opsworks][:instance][:private_ip]},
         :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'phpfastcache.php'),
         :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'rollbar.php'),

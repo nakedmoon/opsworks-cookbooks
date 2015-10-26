@@ -321,7 +321,7 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :service_base_url => node[:service_url],
+                :service_base_url => node.fetch(:service_url){node[:opsworks][:instance][:private_ip]},
                 :aws_include => ::File.join(node[:deploy][application][:current_path], 'config','aws.php'),
                 :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'config','phpfastcache.php'),
                 :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
