@@ -6,7 +6,7 @@ Chef::Log.level = :debug
 node[:deploy].each do |application, deploy|
 
   mysql_command = "#{node[:mysql][:mysql_bin]} -h #{deploy[:database][:host]} -u #{deploy[:database][:username]} #{deploy[:database][:password].blank? ? '' : "-p#{deploy[:database][:password]}"}"
-  mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --events --routines --skip-lock-tables %s | sed -- 's/\sDEFINER=`[^`]*`@`[^`]*`//' | sed -- 's/\sDEFAULT CURRENT_TIMESTAMP//' | %s %s"
+  mysql_dump_f = "mysqldump -h %s --user=%s --password=%s --events --routines --skip-lock-tables %s %s | sed -- 's/\sDEFINER=`[^`]*`@`[^`]*`//' | sed -- 's/\sDEFAULT CURRENT_TIMESTAMP//' | %s %s"
   instances_ips = node["opsworks"]["layers"]["php-app"]["instances"].values.map{|i| i.fetch("private_ip")}.push('localhost')
 
 
@@ -60,11 +60,15 @@ node[:deploy].each do |application, deploy|
 
     end
 
+    ignore_tables = (node[:mysql_import][:ignore_tables] || []).map{|t| "--ignore-table=#{t}"}.join(' ')
+
+
     execute "import remote database #{db}" do
       mysql_dump_command = sprintf(mysql_dump_f, node[:mysql_import][:host],
                                    node[:mysql_import][:username],
                                    node[:mysql_import][:password],
-                                   origin, mysql_command, db
+                                   ignore_tables, origin, mysql_command, db
+
       )
       command mysql_dump_command
       action :run
