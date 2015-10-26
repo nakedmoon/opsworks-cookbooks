@@ -224,8 +224,9 @@ node[:deploy].each do |application, deploy|
   crontab_file = "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
 
   node[:cron_scripts].each do |cmd, time|
-    cli_path = File.join(deploy[:deploy_to], "current")
-    crontab_cli = sprintf("%s %s %s %s %s cd %s && php %s", *time.values, cli_path, File.join(cli_path, cmd))
+    cli_path = File.join(deploy[:deploy_to], "current", cmd)
+    cwd_path = File.dirname(cli_path)
+    crontab_cli = sprintf("%s %s %s %s %s cd %s && php %s", *time.values, cwd_path, cli_path)
     execute "add crontab line for #{cmd}" do
       user deploy[:user]
       command "echo '#{crontab_cli}' >> #{crontab_file}"
