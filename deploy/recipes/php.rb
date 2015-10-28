@@ -24,15 +24,20 @@ node[:deploy].each do |application, deploy|
     app application
   end
 
+  directory "#{deploy[:deploy_to]}/shared/cache" do
+    recursive true
+    action :delete
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/cache")
+    end
+  end
+
 
   directory "#{deploy[:deploy_to]}/shared/cache" do
     recursive true
     action :create
-    owner deploy[:user]
+    owner deploy[:group]
     group deploy[:group]
-    only_if do
-      !File.exists?("#{deploy[:deploy_to]}/shared/cache")
-    end
   end
 
   execute "chage ownership of cache folder" do
