@@ -64,7 +64,6 @@ define :opsworks_deploy do
   end
 
   directory "#{deploy[:deploy_to]}/shared/cache" do
-    recursive true
     action :create
     user 'apache'
     group 'apache'
