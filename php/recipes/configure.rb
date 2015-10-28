@@ -202,7 +202,8 @@ node[:deploy].each do |application, deploy|
         :php_fastcache_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'phpfastcache.php'),
         :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'rollbar.php'),
-        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'slack.php')
+        :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'slack.php'),
+        :php_fastcache => node[:php_fastcache]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

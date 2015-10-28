@@ -26,6 +26,9 @@
   define("RUOLO_BROKER", "Broker");
   define("RUOLO_PARTNER", "Partner");
   define("RUOLO_TITOLARE", "Titolare");
+  define("USER_CACHE_EXPIRE_TIME", <%= @php_fastcache[:expire_time][:user] %>);
+  define("DEFAULT_CACHE_EXPIRE_TIME", <%= @php_fastcache[:expire_time][:default] %>);
+
 
   $group_ids = array(RUOLO_CONCESSIONARIO => '11', RUOLO_FILIALE => '13', RUOLO_VENDITORE => '19');
 
