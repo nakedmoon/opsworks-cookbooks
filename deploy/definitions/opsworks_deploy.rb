@@ -300,7 +300,8 @@ define :opsworks_deploy do
                 :aws_include => ::File.join(node[:deploy][application][:current_path], 'config','aws.php'),
                 :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
                 :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php'),
-                :db_include => ::File.join(node[:deploy][application][:current_path], 'config', 'db.php')
+                :db_include => ::File.join(node[:deploy][application][:current_path], 'config', 'db.php'),
+                :app_include => ::File.join(node[:deploy][application][:current_path], 'config', 'app.php')
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
@@ -318,6 +319,7 @@ define :opsworks_deploy do
                 :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'config','phpfastcache.php'),
                 :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
                 :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php'),
+                :app_include => ::File.join(node[:deploy][application][:current_path], 'config', 'app.php'),
                 :php_fastcache => node[:php_fastcache]
             )
             only_if do

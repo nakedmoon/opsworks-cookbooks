@@ -182,6 +182,7 @@ node[:deploy].each do |application, deploy|
         :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config','aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config','rollbar.php'),
         :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config','slack.php'),
+        :app_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'app.php'),
         :db_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'db.php')
     )
     only_if do
@@ -203,6 +204,7 @@ node[:deploy].each do |application, deploy|
         :aws_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'aws.php'),
         :rollbar_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'rollbar.php'),
         :slack_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'slack.php'),
+        :app_include => ::File.join(deploy[:deploy_to], 'current', 'config', 'app.php'),
         :php_fastcache => node[:php_fastcache]
     )
     only_if do
