@@ -273,6 +273,20 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          # write out app.php
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/app.php" do
+            cookbook 'php'
+            source 'app.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :data_folder => ::File.join(node[:deploy][application][:current_path], 'app', 'part_data')
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
           template "#{node[:deploy][application][:deploy_to]}/shared/config/phinx.yml" do
             cookbook 'php'
             source 'phinx.yml.erb'
@@ -281,7 +295,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :database => deploy[:database],
-                :migrations_dir => ::File.join(node[:deploy][application][:deploy_to], 'migrations'),
+                :migrations_dir => ::File.join(node[:deploy][application][:current_path], 'migrations'),
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

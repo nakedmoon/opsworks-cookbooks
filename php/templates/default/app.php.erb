@@ -1,0 +1,9 @@
+<?php
+
+$partUsers = array();
+<% @data_users.each do |u| %>
+<%= sprintf("array_push($partUsers, array(%s, '%s', '%s'));", *u) %>
+<% end %>
+$partFolder = "<%= @data_folder %>";
+
+?>

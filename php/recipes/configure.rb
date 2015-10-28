@@ -115,8 +115,8 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :log_dir => ::File.join(deploy[:deploy_to], 'log'),
-        :tmp_dir => ::File.join(deploy[:deploy_to], 'tmp')
+        :log_dir => ::File.join(deploy[:deploy_to], 'current', 'log'),
+        :tmp_dir => ::File.join(deploy[:deploy_to], 'current', 'tmp')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
@@ -133,7 +133,22 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :database => deploy[:database],
-        :migrations_dir => ::File.join(deploy[:deploy_to], 'migrations'),
+        :migrations_dir => ::File.join(deploy[:deploy_to], 'current', 'migrations'),
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  # write out app.php
+  template "#{deploy[:deploy_to]}/shared/config/app.php" do
+    cookbook 'php'
+    source 'app.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :data_folder => ::File.join(deploy[:deploy_to], 'current', 'app', 'part_data')
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
