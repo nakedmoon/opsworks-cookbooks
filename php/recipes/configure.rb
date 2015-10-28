@@ -148,7 +148,8 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-        :data_folder => ::File.join(deploy[:deploy_to], 'current', 'app', 'part_data')
+        :data_folder => ::File.join(deploy[:deploy_to], 'current', 'app', 'part_data'),
+        :data_users => node[:data_users]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")

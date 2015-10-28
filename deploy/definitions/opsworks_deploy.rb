@@ -281,7 +281,8 @@ define :opsworks_deploy do
             owner deploy[:user]
             group deploy[:group]
             variables(
-                :data_folder => ::File.join(node[:deploy][application][:current_path], 'app', 'part_data')
+                :data_folder => ::File.join(node[:deploy][application][:current_path], 'app', 'part_data'),
+                :data_users => node[:data_users]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
