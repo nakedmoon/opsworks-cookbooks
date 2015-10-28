@@ -64,9 +64,10 @@ define :opsworks_deploy do
   end
 
   directory "#{deploy[:deploy_to]}/shared/cache" do
+    recursive true
     action :create
-    user 'apache'
-    group 'apache'
+    owner deploy[:group]
+    group deploy[:group]
     only_if do
       !File.exists?("#{deploy[:deploy_to]}/shared/cache")
     end
