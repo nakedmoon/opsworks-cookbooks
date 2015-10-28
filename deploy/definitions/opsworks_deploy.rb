@@ -238,7 +238,7 @@ define :opsworks_deploy do
             group node[:deploy][application][:group]
             variables(
                 :php_fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-                :php_fastcache_path => "",  # use /tmp when empty, fix permission issue
+                :php_fastcache_path => ::File.join(node[:deploy][application][:deploy_to],'shared', 'cache'),  # leave empty to use /tmp
                 :php_fastcache => node[:php_fastcache]
             )
             only_if do

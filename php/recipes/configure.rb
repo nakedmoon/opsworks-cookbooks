@@ -98,7 +98,7 @@ node[:deploy].each do |application, deploy|
     group deploy[:group]
     variables(
         :php_fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
-        :php_fastcache_path => "",  # use /tmp when empty, fix permission issue
+        :php_fastcache_path => ::File.join(deploy[:deploy_to],'shared', 'cache'),  # leave empty to use /tmp
         :php_fastcache => node[:php_fastcache]
     )
     only_if do
