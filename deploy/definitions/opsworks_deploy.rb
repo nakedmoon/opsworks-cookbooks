@@ -66,9 +66,8 @@ define :opsworks_deploy do
   directory "#{deploy[:deploy_to]}/shared/cache" do
     recursive true
     action :create
-    user deploy[:user]
+    user deploy[:group]
     group deploy[:group]
-    mode '0777'
     only_if do
       !File.exists?("#{deploy[:deploy_to]}/shared/cache")
     end
@@ -328,7 +327,8 @@ define :opsworks_deploy do
                 :aws_include => ::File.join(node[:deploy][application][:current_path], 'config','aws.php'),
                 :php_fastcache_include => ::File.join(node[:deploy][application][:current_path], 'config','phpfastcache.php'),
                 :rollbar_include => ::File.join(node[:deploy][application][:current_path], 'config','rollbar.php'),
-                :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php')
+                :slack_include => ::File.join(node[:deploy][application][:current_path], 'config','slack.php'),
+                :php_fastcache => node[:php_fastcache]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
