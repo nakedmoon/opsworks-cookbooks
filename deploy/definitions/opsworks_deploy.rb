@@ -79,7 +79,7 @@ define :opsworks_deploy do
     owner "apache"
     group "apache"
     only_if do
-      !File.exists?("#{deploy[:deploy_to]}/shared/cache")
+      !File.exists?("#{deploy[:deploy_to]}/cache")
     end
   end
 
