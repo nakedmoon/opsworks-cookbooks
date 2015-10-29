@@ -228,7 +228,8 @@ define :opsworks_deploy do
             variables(
                 :php_fastcache_lib => ::File.join(node[:deploy][application][:current_path], 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
                 :php_fastcache_path => ::File.join(node[:deploy][application][:deploy_to],'shared', 'cache'),  # leave empty to use /tmp
-                :php_fastcache => node[:php_fastcache]
+                :php_fastcache => node[:php_fastcache],
+                :memcached => deploy[:memcached]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")

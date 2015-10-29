@@ -9,37 +9,19 @@ phpFastCache::$config = array(
     "htaccess" => true,
     "path" =>  "<%= @php_fastcache_path %>",
     "securityKey" =>  "auto", // auto will use domain name, set it to 1 string if you use alias domain name
-
-
-
-<% if @php_fastcache[:memcached].is_a?(Hash) %>
+<% if @php_fastcache[:storage] == 'memcache' %>
     // MEMCACHE
-
     "memcache" =>  array(
-        array("<%= @php_fastcache[:memcached][:host] %>",<%= @php_fastcache[:memcached][:port] %>,<%= @php_fastcache[:memcached][:timeout] %>),
-    ),
-
-<% end %>
-
-<% if @php_fastcache[:redis].is_a?(Hash) %>
-    // REDIS
-    "redis"         =>  array(
-        "host"  => "<%= @php_fastcache[:redis][:host] %>",
-        "port"  =>  "<%= @php_fastcache[:redis][:port] %>",
-        "password"  =>  "<%= @php_fastcache[:redis][:password] %>",
-        "database"  =>  "<%= @php_fastcache[:redis][:database] %>",
-        "timeout"   =>  "<%= @php_fastcache[:redis][:timeout] %>"
+        array("<%= @memcached[:host] %>",<%= @memcached[:port] %>),
     ),
 <% end %>
-
     "extensions"    =>  array(),
-    "fallback"  => "files",
-
+    "fallback"  => "files"
 );
 
 
 // temporary disabled phpFastCache
 phpFastCache::$disabled = <%= @php_fastcache[:disabled] %>;
-$cache = phpFastCache();
+$cache = phpFastCache('<%= @php_fastcache[:storage] %>');
 
 

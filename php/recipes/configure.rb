@@ -99,7 +99,8 @@ node[:deploy].each do |application, deploy|
     variables(
         :php_fastcache_lib => ::File.join(deploy[:deploy_to], 'current', 'vendor', 'phpfastcache', 'phpfastcache', 'phpfastcache', '3.0.0','phpfastcache.php'),
         :php_fastcache_path => ::File.join(deploy[:deploy_to],'shared', 'cache'),  # leave empty to use /tmp
-        :php_fastcache => node[:php_fastcache]
+        :php_fastcache => node[:php_fastcache],
+        :memcached => deploy[:memcached]
     )
     only_if do
       File.exists?("#{deploy[:deploy_to]}/shared/config")
