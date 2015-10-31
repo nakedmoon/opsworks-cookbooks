@@ -68,6 +68,8 @@ node[:deploy].each do |application, deploy|
     link link_name do
       to link_dest
       action :create
+      owner deploy[:group]
+      group deploy[:group]
       link_type :symbolic
       Chef::Log.debug("Linking #{link_name} to #{link_dest}")
     end
