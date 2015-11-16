@@ -80,6 +80,21 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  template "#{deploy[:deploy_to]}/shared/config/gap.config.php" do
+    cookbook 'php'
+    source 'zurich.config.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :sftp => node[:sftp_sites][:genworth],
+        :private_key_file => node[:sftp_sites][:genworth][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/genworth.pem" : nil
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
   node[:sftp_sites].each do |name, sftp|
     next unless sftp[:private_key].present?
     template "/home/#{deploy[:user]}/.ssh/#{name}.pem" do
