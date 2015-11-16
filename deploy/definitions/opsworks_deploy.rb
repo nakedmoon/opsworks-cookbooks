@@ -226,6 +226,20 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
+          template "#{node[:deploy][application][:deploy_to]}/shared/config/gap.config.php" do
+            cookbook 'php'
+            source 'gap.config.php.erb'
+            mode '0660'
+            owner deploy[:user]
+            group deploy[:group]
+            variables(
+                :sftp => node[:sftp_sites][:genworth],
+                :private_key_file => node[:sftp_sites][:genworth][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/genworth.pem" : nil
+            )
+            only_if do
+              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
+            end
+          end
 
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
