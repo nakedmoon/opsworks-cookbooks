@@ -212,20 +212,6 @@ define :opsworks_deploy do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
             end
           end
-          template "#{node[:deploy][application][:deploy_to]}/shared/config/zurich.config.php" do
-            cookbook 'php'
-            source 'zurich.config.php.erb'
-            mode '0660'
-            owner deploy[:user]
-            group deploy[:group]
-            variables(
-                :sftp => node[:sftp_sites][:zurich],
-                :private_key_file => node[:sftp_sites][:zurich][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/zurich.pem" : nil
-            )
-            only_if do
-              File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
-            end
-          end
           template "#{node[:deploy][application][:deploy_to]}/shared/config/gap.config.php" do
             cookbook 'php'
             source 'gap.config.php.erb'
