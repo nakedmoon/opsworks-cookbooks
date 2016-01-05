@@ -82,7 +82,37 @@ node[:deploy].each do |application, deploy|
 
   template "#{deploy[:deploy_to]}/shared/config/gap.config.php" do
     cookbook 'php'
-    source 'zurich.config.php.erb'
+    source 'gap.config.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :sftp => node[:sftp_sites][:genworth],
+        :private_key_file => node[:sftp_sites][:genworth][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/genworth.pem" : nil
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  template "#{deploy[:deploy_to]}/shared/config/gap_erase.config.php" do
+    cookbook 'php'
+    source 'gap_erase.config.php.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+        :sftp => node[:sftp_sites][:genworth],
+        :private_key_file => node[:sftp_sites][:genworth][:private_key].present? ? "/home/#{deploy[:user]}/.ssh/genworth.pem" : nil
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
+  template "#{deploy[:deploy_to]}/shared/config/gap_valandro.config.php" do
+    cookbook 'php'
+    source 'gap_valandro.config.php.erb'
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
