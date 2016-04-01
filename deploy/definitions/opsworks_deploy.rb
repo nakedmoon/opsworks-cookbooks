@@ -286,6 +286,44 @@ define :opsworks_deploy do
             end
           end
 
+          if node[:cron_scripts].present?
+
+            # write out crontab
+            template "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab" do
+              cookbook 'php'
+              source 'crontab.erb'
+              mode '0660'
+              owner deploy[:user]
+              group deploy[:group]
+              only_if do
+                File.exists?("#{deploy[:deploy_to]}/shared/config")
+              end
+            end
+
+            crontab_file = "#{deploy[:deploy_to]}/shared/config/#{deploy[:user]}_crontab"
+
+            node[:cron_scripts].each do |cmd, time|
+              cli_path = File.join(deploy[:deploy_to], "current", cmd)
+              cwd_path = File.dirname(cli_path)
+              crontab_cli = sprintf("%s %s %s %s %s cd %s && php %s", *time.values, cwd_path, cli_path)
+              execute "add crontab line for #{cmd}" do
+                user deploy[:user]
+                command "echo '#{crontab_cli}' >> #{crontab_file}"
+                action :run
+              end
+            end
+
+            if node[:opsworks][:layers]['php-app'][:instances].keys.size <= 1
+              execute "add crontab for user #{deploy[:user]}" do
+                user deploy[:user]
+                command "crontab #{crontab_file}"
+                action :run
+              end
+            end
+
+          end
+
+
         elsif deploy[:application_type] == 'nodejs'
           if deploy[:auto_npm_install_on_deploy]
             OpsWorks::NodejsConfiguration.npm_install(application, node[:deploy][application], release_path, node[:opsworks_nodejs][:npm_install_options])
