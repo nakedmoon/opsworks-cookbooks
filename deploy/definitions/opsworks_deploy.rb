@@ -1,3 +1,5 @@
+Chef::Log.level = :debug
+
 define :opsworks_deploy do
   application = params[:app]
   deploy = params[:deploy_data]
@@ -78,9 +80,10 @@ define :opsworks_deploy do
       symlinks(deploy[:symlinks]) unless deploy[:symlinks].nil?
       action deploy[:action]
 
-      if deploy[:application_type] == 'rails' && node[:opsworks][:instance][:layers].include?('rails-app')
-        restart_command "sleep #{deploy[:sleep_before_restart]} && #{node[:opsworks][:rails_stack][:restart_command]}"
-      end
+      # if deploy[:application_type] == 'rails' && node[:opsworks][:instance][:layers].include?('rails-app')
+      #   Chef::Log.debug('Restarting Rails Server From Opsworks Deploy')
+      #   restart_command "sleep #{deploy[:sleep_before_restart]} && #{node[:opsworks][:rails_stack][:restart_command]}"
+      # end
 
       case deploy[:scm][:scm_type].to_s
       when 'git'
@@ -154,6 +157,13 @@ define :opsworks_deploy do
 
         # run user provided callback file
         run_callback_from_file("#{release_path}/deploy/before_migrate.rb")
+      end
+    end
+
+    if deploy[:scm][:repository].start_with?(Dir.tmpdir)
+      directory "#{node[:deploy][application][:deploy_to]}/current/.git" do
+        recursive true
+        action :delete
       end
     end
   end
