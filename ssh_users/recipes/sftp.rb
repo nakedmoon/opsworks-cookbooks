@@ -1,5 +1,5 @@
 group 'opsworks'
-chef_gem 'ruby-shadow'
+chef_gem 'ruby-shadow' # To set user password this gem is required
 
 template '/etc/ssh/sshd_config' do
   backup false
@@ -26,6 +26,10 @@ node[:sftp_sites].each do |sftp_site|
   if sftp_site[:password].present?
     user "add password for user #{sftp_site[:user]}" do
       username sftp_site[:user]
+      # Value of sftp_site[:password] should be a password shadow hash
+      # The following example shows how the command line can be used to create a password shadow hash
+      # openssl passwd -1 "theplaintextpassword"
+      # REF: https://docs.chef.io/resource_user.html#password-shadow-hash
       password sftp_site[:password]
       action :modify
     end
