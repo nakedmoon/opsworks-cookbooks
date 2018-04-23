@@ -158,11 +158,11 @@ Subsystem sftp internal-sftp
 #	AllowTcpForwarding no
 #	ForceCommand cvs server
 
-<% @sftp_sites.each do |stp_site| %>
+<% @sftp_sites.each do |sftp_site| %>
 
-    <% chroot_dir = File.join(@sftp_root, stp_site[:home]) %>
+    <% chroot_dir = File.join(@sftp_root, sftp_site[:home]) %>
 
-    Match User <%= stp_site[:download][:user] %>
+    Match User <%= sftp_site[:download][:user] %>
     <% if sftp_site[:download][:password].present? %>
     PasswordAuthentication yes
     <% end %>
@@ -171,7 +171,7 @@ Subsystem sftp internal-sftp
     AllowTcpForwarding no
     ForceCommand internal-sftp
 
-    Match User <%= stp_site[:upload][:user] %>
+    Match User <%= sftp_site[:upload][:user] %>
     <% if sftp_site[:upload][:password].present? %>
     PasswordAuthentication yes
     <% end %>

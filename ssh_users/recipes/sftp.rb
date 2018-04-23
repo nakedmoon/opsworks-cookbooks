@@ -44,12 +44,12 @@ node[:sftp_sites].each do |sftp_site|
   end
 
   execute "add .ssh dir for user #{sftp_site[:download][:user]}" do
-    command "sudo su - #{sftp_site[:download][:user]} -c \"mkdir .ssh\""
+    command "sudo su - #{sftp_site[:download][:user]} -c \"mkdir -p .ssh\""
     action :run
   end
 
   execute "add .ssh dir for user #{sftp_site[:upload][:user]}" do
-    command "sudo su - #{sftp_site[:upload][:user]} -c \"mkdir .ssh\""
+    command "sudo su - #{sftp_site[:upload][:user]} -c \"mkdir -p .ssh\""
     action :run
   end
 
@@ -83,7 +83,7 @@ node[:sftp_sites].each do |sftp_site|
 
   base_repo = File.join(sftp_base_dir, sftp_site[:home])
   execute "create sftp repo #{base_repo}" do
-    command "sudo mkdir #{base_repo}"
+    command "sudo mkdir -p #{base_repo}"
     action :run
   end
 
@@ -91,7 +91,7 @@ node[:sftp_sites].each do |sftp_site|
   # Download Folder
   download_dir = File.join(base_repo, sftp_site[:download][:folder])
   execute "create sftp repo #{download_dir}" do
-    command "sudo mkdir #{download_dir}"
+    command "sudo mkdir -p #{download_dir}"
     action :run
   end
 
@@ -109,7 +109,7 @@ node[:sftp_sites].each do |sftp_site|
   # Upload Folder
   upload_dir = File.join(base_repo, sftp_site[:upload][:folder])
   execute "create sftp repo #{upload_dir}" do
-    command "sudo mkdir #{upload_dir}"
+    command "sudo mkdir -p #{upload_dir}"
     action :run
   end
 
