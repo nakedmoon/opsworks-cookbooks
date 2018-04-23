@@ -21,9 +21,26 @@ node[:sftp_sites].each do |sftp_site|
     command "sudo adduser #{sftp_site[:upload][:user]}"
     action :run
   end
+
+  if sftp_site[:upload][:password].present?
+    user "add password for user #{sftp_site[:upload][:user]}" do
+      username sftp_site[:upload][:user]
+      password sftp_site[:upload][:password]
+      action :modify
+    end
+  end
+
   execute "add user #{sftp_site[:download][:user]}" do
     command "sudo adduser #{sftp_site[:download][:user]}"
     action :run
+  end
+
+  if sftp_site[:download][:password].present?
+    user "add password for user #{sftp_site[:download][:user]}" do
+      username sftp_site[:download][:user]
+      password sftp_site[:download][:password]
+      action :modify
+    end
   end
 
   execute "add .ssh dir for user #{sftp_site[:download][:user]}" do
@@ -51,7 +68,7 @@ node[:sftp_sites].each do |sftp_site|
     source 'authorized_keys.erb'
     owner sftp_site[:download][:user]
     group sftp_site[:download][:user]
-    variables :public_key => sftp_site[:download][:public_key]
+    variables :public_key => sftp_site[:download][:public_key] || ""
     mode 0600
   end
 
@@ -60,7 +77,7 @@ node[:sftp_sites].each do |sftp_site|
     source 'authorized_keys.erb'
     owner sftp_site[:upload][:user]
     group sftp_site[:upload][:user]
-    variables :public_key => sftp_site[:upload][:public_key]
+    variables :public_key => sftp_site[:upload][:public_key] || ""
     mode 0600
   end
 
