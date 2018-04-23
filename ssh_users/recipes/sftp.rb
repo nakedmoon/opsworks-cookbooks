@@ -23,7 +23,7 @@ node[:sftp_sites].each do |sftp_site|
     action :run
   end
 
-  if sftp_site[:upload][:password].present?
+  if sftp_site[:password].present?
     user "add password for user #{sftp_site[:user]}" do
       username sftp_site[:user]
       password sftp_site[:password]
