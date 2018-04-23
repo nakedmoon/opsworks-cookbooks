@@ -160,7 +160,7 @@ Subsystem sftp internal-sftp
 
 <% @sftp_sites.each do |sftp_site| %>
 
-    <% chroot_dir = File.join(@sftp_root, sftp_site[:user], sftp_site[:folder]) %>
+    <% chroot_dir = File.join(@sftp_root, sftp_site[:user]) %>
 
     Match User <%= sftp_site[:user] %>
     <% if sftp_site[:password].present? %>
