@@ -18,9 +18,17 @@ execute "create sftp base dir #{sftp_base_dir}" do
 end
 
 node[:sftp_sites].each do |sftp_site|
-  user "add user #{sftp_site[:user]}" do
-    username sftp_site[:user]
-    password sftp_site[:password] if sftp_site[:password].present?
+  execute "add user #{sftp_site[:user]}" do
+    command "sudo adduser #{sftp_site[:user]}"
+    action :run
+  end
+
+  if sftp_site[:upload][:password].present?
+    user "add password for user #{sftp_site[:user]}" do
+      username sftp_site[:user]
+      password sftp_site[:password]
+      action :modify
+    end
   end
 
   execute "add .ssh dir for user #{sftp_site[:user]}" do
