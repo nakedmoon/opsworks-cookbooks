@@ -160,24 +160,14 @@ Subsystem sftp internal-sftp
 
 <% @sftp_sites.each do |sftp_site| %>
 
-    <% chroot_dir = File.join(@sftp_root, sftp_site[:home]) %>
+    <% chroot_dir = File.join(@sftp_root, sftp_site[:user], sftp_site[:folder]) %>
 
-    Match User <%= sftp_site[:download][:user] %>
-    <% if sftp_site[:download][:password].present? %>
+    Match User <%= sftp_site[:user] %>
+    <% if sftp_site[:password].present? %>
     PasswordAuthentication yes
     <% end %>
     ChrootDirectory <%= chroot_dir %>
     X11Forwarding no
     AllowTcpForwarding no
     ForceCommand internal-sftp
-
-    Match User <%= sftp_site[:upload][:user] %>
-    <% if sftp_site[:upload][:password].present? %>
-    PasswordAuthentication yes
-    <% end %>
-    ChrootDirectory <%= chroot_dir %>
-    X11Forwarding no
-    AllowTcpForwarding no
-    ForceCommand internal-sftp
-
 <% end %>
