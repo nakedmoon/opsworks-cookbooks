@@ -1,4 +1,5 @@
 group 'opsworks'
+chef_gem 'ruby-shadow'
 
 template '/etc/ssh/sshd_config' do
   backup false
