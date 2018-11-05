@@ -26,6 +26,7 @@ node[:deploy].each do |application, deploy|
     cwd deploy[:current_path]
     command "php composer.phar install --no-dev --no-interaction --optimize-autoloader"
     action :run
+    user deploy[:user]
     only_if {
       File.exists?(deploy[:current_path]) &&
           ::File.exists?("#{deploy[:current_path]}/composer.json") &&
