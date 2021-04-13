@@ -1,10 +1,32 @@
-require 'rest-client'
 require 'time'
 require 'openssl'
 require 'base64'
-require 'net/http'
 
 module S3FileLib
+
+  module SigV2
+  def self.sign(request, bucket, path, *args)
+      token = args[2] if args[2]
+      now = Time.now().utc.strftime('%a, %d %b %Y %H:%M:%S GMT')
+      string_to_sign = "#{request.method}\n\n\n%s\n" % [now]
+
+      string_to_sign += "x-amz-security-token:#{token}\n" if token
+
+      string_to_sign += "/%s%s" % [bucket,path]
+
+      digest = OpenSSL::Digest.new('sha1')
+      signed = OpenSSL::HMAC.digest(digest, args[1], string_to_sign)
+      signed_base64 = Base64.encode64(signed)
+
+      auth_string = 'AWS %s:%s' % [args[0], signed_base64]
+
+      request["date"] = now
+      request["authorization"] = auth_string.strip
+      request["x-amz-security-token"] = token if token
+      request
+    end
+  end
+
   module SigV4
     def self.sigv4(string_to_sign, aws_secret_access_key, region, date, serviceName)
       k_date    = OpenSSL::HMAC.digest("sha256", "AWS4" + aws_secret_access_key, date)
@@ -15,7 +37,8 @@ module S3FileLib
       OpenSSL::HMAC.hexdigest("sha256", k_signing, string_to_sign)
     end
 
-    def self.sign(request, params, region, aws_access_key_id, aws_secret_access_key, token = nil)
+    def self.sign(request, params, *args)
+      token = args[3] if args[3]
       url = URI.parse(params[:url])
       content = request.body || ""
 
@@ -38,11 +61,11 @@ module S3FileLib
       signed_headers = request.each_name.map(&:downcase).sort.join(";")
 
       canonical_request = [request.method, url.path, canonical_query_string, canonical_headers, signed_headers, body_digest].join("\n")
-      scope = format("%s/%s/%s/%s", date, region, service, "aws4_request")
-      credential = [aws_access_key_id, scope].join("/")
+      scope = format("%s/%s/%s/%s", date, args[0], service, "aws4_request")
+      credential = [args[1], scope].join("/")
 
       string_to_sign = "#{algorithm}\n#{time}\n#{scope}\n#{Digest::SHA256.hexdigest(canonical_request)}"
-      signed_hex = sigv4(string_to_sign, aws_secret_access_key, region, date, service)
+      signed_hex = sigv4(string_to_sign, args[2], args[0], date, service)
       auth_string = "#{algorithm} Credential=#{credential}, SignedHeaders=#{signed_headers}, Signature=#{signed_hex}"
 
       request["Authorization"] = auth_string
@@ -52,94 +75,154 @@ module S3FileLib
 
   BLOCKSIZE_TO_READ = 1024 * 1000 unless const_defined?(:BLOCKSIZE_TO_READ)
 
-  def self.detect_bucket_region(bucket)
-    request = Net::HTTP::Head.new("/")
-    request['Host'] = bucket
-    response = Net::HTTP.start("s3.amazonaws.com", 80).request(request)
-
-    if response["location"]
-      _, _, _, s3_region = OpsWorks::SCM::S3.parse_uri(response["location"])
-      Chef::Log.info("Detected bucket location is #{response["location"]}, region is #{s3_region}")
-      return s3_region
-    else
-      Chef::Log.error("Could not determine the location from head request, response is #{response}")
-      return nil
-    end
-  end
-
-  def self.with_region_detect(original_url, path, bucket, region)
-    Chef::Log.info("Trying to download from #{original_url} in region #{region}")
-    yield(original_url, region)
-  rescue client::BadRequest, client::MovedPermanently, client::TemporaryRedirect => e
-    region = e.response.headers[:x_amz_region] || e.response.headers[:x_amz_bucket_region]
-
-    # First attempt to determine region using redirection failed, trying to use head request
+  def self.with_region_detect(region = nil)
+    yield(region)
+  rescue client::BadRequest => e
     if region.nil?
-      Chef::Log.warn("Could not download from S3: #{e.message}, trying to determine bucket region using head request")
-      region = detect_bucket_region(bucket)
-
-      # Second attempt to determine region using head request failed, exiting the process
-      if region.nil?
-        Chef::Log.error("Could not determine the region of S3 bucket #{bucket}, please verify the S3 URL #{original_url}")
-        raise
-      end
+      region = e.response.headers[:x_amz_region]
+      raise if region.nil?
+      yield(region)
+    else
+      raise
     end
-
-    Chef::Log.warn("First download try failed with '#{e.message}' (#{e.class}), retrying")
-
-    url = [build_endpoint_url(bucket, region), path].join()
-    Chef::Log.info("Retrying S3 download with new url #{url} in region #{region}")
-    yield(url, region)
   end
 
-  def self.do_request(method, url, bucket, path, aws_access_key_id, aws_secret_access_key, token, region)
+  def self.do_request(method, url, bucket, path, *args, public_bucket: public_bucket)
+    region = args[3]
     url = build_endpoint_url(bucket, region) if url.nil?
-    url = "#{url}#{path}"
 
-    # do not sign requests for public endpoints 
-    #
-    client.reset_before_execution_procs
-    return client::Request::execute(:method => method, :url => url, :raw_response => true) if is_public_s3_endpoint?(url)
-
-    with_region_detect(url, path, bucket, region) do |real_url, real_region|
+    with_region_detect(region) do |real_region|
       client.reset_before_execution_procs
       client.add_before_execution_proc do |request, params|
-        SigV4.sign(request, params, real_region, aws_access_key_id, aws_secret_access_key, token)
+        if !public_bucket
+          if real_region.nil?
+            SigV2.sign(request, bucket, path, args[0], args[1], args[2])
+          else
+            SigV4.sign(request, params, real_region, args[0], args[1], args[2])
+          end
+        end
       end
-      client::Request.execute(:method => method, :url => real_url, :raw_response => true)
+      client::Request.execute(:method => method, :url => "#{url}#{path}", :raw_response => true)
     end
   end
 
   def self.build_endpoint_url(bucket, region)
-    if region == "us-east-1"
-      # Virtual Hosting style url is not supported in us-east-1
-      # https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
-      "https://s3.amazonaws.com/#{bucket}"
+    endpoint = if region && region != "us-east-1"
+                 "s3-#{region}.amazonaws.com"
+               else
+                 "s3.amazonaws.com"
+               end
+
+    if bucket =~ /^[a-z0-9][a-z0-9-]+[a-z0-9]$/
+      "https://#{bucket}.#{endpoint}"
     else
-      "https://s3-#{region}.amazonaws.com/#{bucket}"
+      "https://#{endpoint}/#{bucket}"
     end
   end
 
-  def self.get_md5_from_s3(bucket, url, path, aws_access_key_id, aws_secret_access_key, token, region)
-    get_digests_from_s3(bucket, url, path, aws_access_key_id, aws_secret_access_key, token, region)["md5"]
+  def self.get_md5_from_s3(bucket, url, path, *args, public_bucket: nil)
+    if public_bucket
+      get_digests_from_s3(bucket, url, path, public_bucket: public_bucket)["md5"]
+    else
+      get_digests_from_s3(bucket, url, path, args[0], args[1], args[2], args[3], public_bucket: public_bucket)["md5"]
+    end
   end
 
-  def self.get_digests_from_s3(bucket,url,path,aws_access_key_id,aws_secret_access_key,token, region)
-    response = do_request("HEAD", url, bucket, path, aws_access_key_id, aws_secret_access_key, token, region)
-
-    etag = response.headers[:etag].gsub('"','')
-    digest = response.headers[:x_amz_meta_digest]
+  def self.get_digests_from_headers(headers)
+    etag = headers[:etag].gsub('"','')
+    digest = headers[:x_amz_meta_digest]
     digests = digest.nil? ? {} : Hash[digest.split(",").map {|a| a.split("=")}]
-
     return {"md5" => etag}.merge(digests)
   end
 
-  def self.get_from_s3(bucket, url, path, aws_access_key_id, aws_secret_access_key, token, region)
+  def self.get_digests_from_s3(bucket, url, path, *args, timeout: 300,open_timeout: 10, retries: 5, public_bucket: public_bucket)
+    now, auth_string = get_s3_auth("HEAD", bucket, path, args[1], args[2], args[3])
+    max_tries = retries + 1
+    headers = build_headers(now, auth_string, token)
+    saved_exception = nil
+
+    while (max_tries > 0)
+      begin
+
+        response = RestClient.head('https://%s.s3.amazonaws.com%s' % [bucket,path], headers)
+
+        etag = response.headers[:etag].gsub('"','')
+        digest = response.headers[:x_amz_meta_digest]
+        digests = digest.nil? ? {} : Hash[digest.split(",").map {|a| a.split("=")}]
+
+        return {"md5" => etag}.merge(digests)
+
+        rescue => e
+           max_tries = max_tries - 1
+           saved_exception = e
+      end
+    end
+    raise saved_exception
+  end
+
+  def self.validate_download_checksum(response)
+    # Default to not checking md5 sum of downloaded objects
+    # per http://docs.aws.amazon.com/AmazonS3/latest/API/RESTCommonResponseHeaders.html
+    # If an object is created by either the Multipart Upload or Part Copy operation,
+    # the ETag is not an MD5 digest, regardless of the method of encryption
+    # however, if present, x-amz-meta-digest will contain the digest, so
+    # try if we see enough information and verify_md5 is set.
+    if response.headers[:x_amz_meta_digest]
+      return self.verify_md5_checksum(response.headers[:x_amz_meta_digest_md5].gsub('"',''), response.file.path)
+    else
+      server_side_encryption_customer_algorithm = response.headers[:x_amz_server_side_encryption_customer_algorithm]
+      server_side_encryption = response.headers[:x_amz_server_side_encryption]
+      if server_side_encryption_customer_algorithm.nil? and server_side_encryption != "aws:kms"
+        return self.verify_md5_checksum(response.headers[:etag].gsub('"',''), response.file.path)
+      else
+        # If we do not have the x-amz-meta-digest-md5 header, we
+        # cannot validate objects encrypted with SSE-C or SSE-KMS,
+        # because the ETag will not be the MD5 digest.  Assume it is
+        # valid in those cases.
+        return true
+      end
+    end
+  end
+
+
+  def self.get_from_s3(bucket, url, path, aws_access_key_id, aws_secret_access_key, token, public_bucket: public_bucket, verify_md5: false, region: nil)
     response = nil
     retries = 5
     for attempts in 0..retries
       begin
-        response = do_request("GET", url, bucket, path, aws_access_key_id, aws_secret_access_key, token, region)
+        if public_bucket
+          response = do_request("GET", url, bucket, path, public_bucket: public_bucket)
+        else
+          response = do_request("GET", url, bucket, path, args[0], args[1], args[2], args[3], public_bucket: public_bucket)
+        end
+        # check the length of the downloaded object,
+        # make sure we didn't get nailed by
+        # a quirk in Net::HTTP class from the Ruby standard library.
+        # Net::HTTP has the behavior (and I would call this a bug) that if the
+        # connection gets reset in the middle of transferring the response,
+        # it silently truncates the response back to the caller without throwing an exception.
+        # ** See https://github.com/ruby/ruby/blob/trunk/lib/net/http/response.rb#L291
+        # and https://github.com/ruby/ruby/blob/trunk/lib/net/protocol.rb#L99 .
+        # It attempts to read up to Content-Length worth of bytes, but if hits an early EOF,
+        # it just returns without throwing an exception (the ignore_eof flag).
+
+        length = response.headers[:content_length].to_i()
+        if not length.nil? and response.file.size() != length
+          raise "Downloaded object size (#{response.file.size()}) does not match expected content_length (#{length})"
+        end
+
+        # default to not checking md5 sum of downloaded objects
+        # per http://docs.aws.amazon.com/AmazonS3/latest/API/RESTCommonResponseHeaders.html
+        # If an object is created by either the Multipart Upload or Part Copy operation,
+        # the ETag is not an MD5 digest, regardless of the method of encryption
+        # however, if present, x-amz-meta-digest will contain the digest, so
+        # try if we see enough information and verify_md5 is set.
+        if verify_md5
+          if not self.validate_download_checksum(response)
+            raise "Downloaded object has an md5sum which differs from the expected value provided by S3"
+          end
+        end
+
         return response
         # break
       rescue client::MovedPermanently, client::Found, client::TemporaryRedirect => e
@@ -161,6 +244,25 @@ module S3FileLib
         raise e
       end
     end
+  end
+
+  def self.get_s3_auth(method, bucket,path,aws_access_key_id,aws_secret_access_key, token)
+    now = Time.now().utc.strftime('%a, %d %b %Y %H:%M:%S GMT')
+    string_to_sign = "#{method}\n\n\n%s\n" % [now]
+
+    if token
+      string_to_sign += "x-amz-security-token:#{token}\n"
+    end
+
+    string_to_sign += "/%s%s" % [bucket,path]
+
+    digest = digest = OpenSSL::Digest::Digest.new('sha1')
+    signed = OpenSSL::HMAC.digest(digest, aws_secret_access_key, string_to_sign)
+    signed_base64 = Base64.encode64(signed)
+
+    auth_string = 'AWS %s:%s' % [aws_access_key_id,signed_base64]
+
+    [now,auth_string]
   end
 
   def self.aes256_decrypt(key, file)
@@ -201,6 +303,15 @@ module S3FileLib
 
   def self.verify_md5_checksum(checksum, file)
     s3_md5 = checksum
+    local_md5 = buffered_md5_checksum(file)
+
+    Chef::Log.debug "md5 of remote object is #{s3_md5}"
+    Chef::Log.debug "md5 of local object is #{local_md5.hexdigest}"
+
+    local_md5.hexdigest == s3_md5
+  end
+
+  def self.buffered_md5_checksum(file)
     local_md5 = Digest::MD5.new
 
     # buffer the checksum which should save RAM consumption
@@ -209,22 +320,27 @@ module S3FileLib
         local_md5.update buffer
       end
     end
-
-    Chef::Log.debug "md5 of remote object is #{s3_md5}"
-    Chef::Log.debug "md5 of local object is #{local_md5.hexdigest}"
-
-    local_md5.hexdigest == s3_md5
+    local_md5
   end
 
-  def self.is_public_s3_endpoint?(url)
-    resp = client::Request.execute(:method => "HEAD", :url => url, :raw_response => true)
-    resp.code == 200
-  rescue => e
-    Chef::Log.info("Assuming S3 endpoint is not public (#{e.message})")
-    return false
+  def self.verify_etag(etag, file)
+    catalog.fetch(file, nil) == etag
+  end
+
+  def self.catalog_path
+    File.join(Chef::Config[:file_cache_path], 's3_file_etags.json')
+  end
+
+  def self.catalog
+    File.exist?(catalog_path) ? JSON.parse(IO.read(catalog_path)) : {}
+  end
+
+  def self.write_catalog(data)
+    File.open(catalog_path, 'w', 0644) { |f| f.write(JSON.dump(data)) }
   end
 
   def self.client
+    require 'rest-client'
     RestClient.proxy = ENV['http_proxy']
     RestClient.proxy = ENV['https_proxy']
     RestClient.proxy = ENV['no_proxy']
