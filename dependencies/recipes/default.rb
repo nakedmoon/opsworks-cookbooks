@@ -2,6 +2,7 @@
 # Cookbook Name:: dependencies
 # Recipe:: default
 
+include_recipe 'opsworks_initial_setup'
 include_recipe 'packages'
 include_recipe 'gem_support'
 include_recipe node[:opsworks][:ruby_stack]
