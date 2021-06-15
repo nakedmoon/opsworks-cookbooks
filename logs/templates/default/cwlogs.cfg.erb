@@ -1,7 +1,7 @@
 [general]
 state_file = /var/awslogs/state/agent-state
 
-<% if false %>
+
   <% node[:deploy].each do |application, deploy| %>
     <% @section = [node[:opsworks][:stack][:name], application].join('_').gsub(' ', '_') %>
     <% @cwlogs = deploy[:cwlogs] %>
@@ -13,13 +13,11 @@ state_file = /var/awslogs/state/agent-state
   file = <%= File.join(@base_path, @cwlogs.fetch(:logfile)) %>
   log_stream_name = <%= @cwlogs.fetch(:log_stream_name){node[:opsworks][:instance][:hostname]} %>
   <% end %>
+
+<% if false %>
+  [<%= node[:opsworks][:stack][:name] %>]
+  datetime_format = [%Y-%m-%d %H:%M:%S]
+  log_group_name = <%= node[:opsworks][:stack][:name].gsub(' ','_') %>
+  file = <%= node[:cwlogs][:logfile] %>
+  log_stream_name = <%= node[:opsworks][:instance][:hostname] %>
 <% end %> 
-
-
-[<%= node[:opsworks][:stack][:name] %>]
-datetime_format = [%Y-%m-%d %H:%M:%S]
-log_group_name = <%= node[:opsworks][:stack][:name].gsub(' ','_') %>
-file = <%= node[:cwlogs][:logfile] %>
-log_stream_name = <%= node[:opsworks][:instance][:hostname] %>
-
-
