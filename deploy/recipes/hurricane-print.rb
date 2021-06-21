@@ -3,6 +3,10 @@ Chef::Log.level = :debug
 
 node[:deploy].each do |application, deploy|
 
+  execute 'hostname "'+node["opsworks"]["instance"]["public_dns_name"]+'"' do
+    not_if 'hostname -eq "'+node["opsworks"]["instance"]["public_dns_name"]+'"'
+  end
+
   rails_env = deploy[:rails_env]
   current_path = deploy[:current_path]
 
