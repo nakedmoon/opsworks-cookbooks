@@ -111,7 +111,7 @@ node[:deploy].each do |application, deploy|
     owner deploy[:user]
     group deploy[:group]
     variables(
-      :companies_enabled => node[:hurricane_api_settings][:offers_search][:companies_enabled] || [],
+      :companies_enabled => node[:hurricane_api_settings][:rca][:offers_search][:companies_enabled] || [],
       :env => rails_env
     )
     only_if do
