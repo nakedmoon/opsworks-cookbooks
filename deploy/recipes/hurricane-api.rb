@@ -105,6 +105,20 @@ node[:deploy].each do |application, deploy|
     end
   end
 
+  template "#{deploy[:deploy_to]}/shared/config/rca.yml" do
+    source 'hurricane-api/rca.yml.erb'
+    mode '0660'
+    owner deploy[:user]
+    group deploy[:group]
+    variables(
+      :companies_enabled => node[:hurricane_api_settings][:offers_search][:companies_enabled] || [],
+      :env => rails_env
+    )
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
+
   template "#{deploy[:deploy_to]}/shared/config/air_api.yml" do
     source 'hurricane-api/air_api.yml.erb'
     mode '0660'
