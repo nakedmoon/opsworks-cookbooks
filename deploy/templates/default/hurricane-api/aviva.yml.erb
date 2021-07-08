@@ -13,7 +13,7 @@
   pdf:
     storages:
       s3:
-        bucket_name: 'fit2you-rca-<%= @env %>'
+        bucket_name: '<%= @hurricane_api_settings[:aviva_rca][:bucket_name] %>'
         folder: 'aviva'
   codice:
     convenzione: '00980'
