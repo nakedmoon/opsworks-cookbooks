@@ -32,3 +32,6 @@ default: &default
 
   hurricane:
     export_quantum_url: <%= @etl_settings[:hurricane][:export_quantum_url] %>
+    quantum_sync:
+      guarantees_to_create_url: <%= @etl_settings[:hurricane][:quantum_sync][:guarantees_to_create_url] %>
+      guarantees_to_update_url: <%= @etl_settings[:hurricane][:quantum_sync][:guarantees_to_update_url] %>
