@@ -5,3 +5,14 @@
 # "ruby/attributes/customize.rb" in your cookbook repository and
 # put the overrides in YOUR customize.rb file.
 ###
+
+case node["opsworks"]["ruby_version"]
+when "2.3"
+  default[:ruby][:major_version] = "2"
+  default[:ruby][:minor_version] = "4"
+  default[:ruby][:patch_version] = "10"
+  default[:ruby][:pkgrelease]    = "1"
+
+  default[:ruby][:full_version] = [node[:ruby][:major_version], node[:ruby][:minor_version]].join(".")
+  default[:ruby][:version] = [node[:ruby][:full_version], node[:ruby][:patch_version]].join(".")
+end

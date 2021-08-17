@@ -9,3 +9,5 @@
 # The following shows how to override the bundler version:
 #
 #normal[:opsworks_bundler][:version] = '1.3.5'
+
+default[:opsworks_bundler][:version] = '1.17.3'
