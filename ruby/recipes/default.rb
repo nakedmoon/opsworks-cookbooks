@@ -47,7 +47,7 @@ else
   # end
 
   # easier
-  yum_package default[:ruby][:yum_version] do
+  yum_package node[:ruby][:yum_version] do
     notifies :write, "log[downloading]", :immediately
     action :install
   end
