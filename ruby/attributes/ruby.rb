@@ -36,6 +36,8 @@ when "2.3"
   default[:ruby][:full_version] = [node[:ruby][:major_version], node[:ruby][:minor_version]].join(".")
   default[:ruby][:version] = [node[:ruby][:full_version], node[:ruby][:patch_version]].join(".")
 
+  default[:ruby][:yum_version] = "ruby24"
+
 when "2.2"
   default[:ruby][:major_version] = '2'
   default[:ruby][:minor_version] = '2'
