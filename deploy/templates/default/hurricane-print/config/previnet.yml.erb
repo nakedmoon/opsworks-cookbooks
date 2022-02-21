@@ -1,2 +1,10 @@
 <%= @hurricane_print_env %>:
   extra_documentation_email: <%= @hurricane_print_settings[:previnet][:extra_documentation_email] %>
+  <% if @hurricane_print_settings[:previnet][:extra_documentation_email_bcc].empty? %>
+  extra_documentation_email_bcc: []
+  <% else %>
+  extra_documentation_email_bcc:
+    <% @hurricane_print_settings[:previnet][:extra_documentation_email_bcc].each do |email| %>
+    - <%= email %>
+    <% end %>
+  <% end %>
