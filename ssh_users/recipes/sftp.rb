@@ -100,20 +100,20 @@ node[:sftp_sites].each do |sftp_site|
       command "sudo adduser #{user[:user]} -g #{user_group}"
       action :run
     end
-    execute "add .ssh dir for user #{sftp_site[:upload][:user]}" do
-      command "sudo su - #{sftp_site[:upload][:user]} -c \"mkdir .ssh\""
+    execute "add .ssh dir for user #{user[:user]}" do
+      command "sudo su - #{user[:user]} -c \"mkdir .ssh\""
       action :run
     end
-    execute "chmod .ssh dir for user #{sftp_site[:upload][:user]}" do
-      command "sudo su - #{sftp_site[:upload][:user]} -c \"chmod 700 .ssh\""
+    execute "chmod .ssh dir for user #{user[:user][:user]}" do
+      command "sudo su - #{user[:user]} -c \"chmod 700 .ssh\""
       action :run
     end
-    template "/home/#{sftp_site[:upload][:user]}/.ssh/authorized_keys" do
+    template "/home/#{user[:user]}/.ssh/authorized_keys" do
       backup false
       source 'authorized_keys.erb'
-      owner sftp_site[:upload][:user]
-      group sftp_site[:upload][:user]
-      variables :public_key => sftp_site[:upload][:public_key]
+      owner user[:user]
+      group user[:user]
+      variables :public_key => user[:public_key]
       mode 0600
     end
   end
