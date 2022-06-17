@@ -104,7 +104,7 @@ node[:sftp_sites].each do |sftp_site|
       command "sudo su - #{user[:user]} -c \"mkdir .ssh\""
       action :run
     end
-    execute "chmod .ssh dir for user #{user[:user][:user]}" do
+    execute "chmod .ssh dir for user #{user[:user]}" do
       command "sudo su - #{user[:user]} -c \"chmod 700 .ssh\""
       action :run
     end
