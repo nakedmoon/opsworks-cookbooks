@@ -80,9 +80,13 @@ node[:sftp_sites].each do |sftp_site|
 
 
   # Upload Folder
-  upload_dir = File.join(base_repo, sftp_site[:upload][:folder])
+  upload_dir = File.join(base_repo, sftp_site[:folder_upload])
   execute "create sftp repo #{upload_dir}" do
     command "sudo mkdir #{upload_dir}"
+    action :run
+  end
+  execute "chown #{upload_dir}" do
+    command "sudo chown #{sftp_site[:download][:user]}:#{user_group} #{upload_dir}"
     action :run
   end
 
@@ -111,10 +115,6 @@ node[:sftp_sites].each do |sftp_site|
       group sftp_site[:upload][:user]
       variables :public_key => sftp_site[:upload][:public_key]
       mode 0600
-    end
-    execute "chown #{upload_dir}" do
-      command "sudo chown #{sftp_site[:download][:user]}:#{user_group} #{upload_dir}"
-      action :run
     end
   end
 
