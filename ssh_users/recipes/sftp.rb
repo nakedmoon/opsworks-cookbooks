@@ -47,7 +47,7 @@ node[:sftp_sites].each do |sftp_site|
     backup false
     source 'authorized_keys.erb'
     owner sftp_site[:download][:user]
-    group sftp_site[:download][:user]
+    group user_group
     variables :public_key => sftp_site[:download][:public_key]
     mode 0600
   end
@@ -112,7 +112,7 @@ node[:sftp_sites].each do |sftp_site|
       backup false
       source 'authorized_keys.erb'
       owner user[:user]
-      group user[:user]
+      user_group
       variables :public_key => user[:public_key]
       mode 0600
     end
