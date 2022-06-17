@@ -168,10 +168,13 @@ Subsystem sftp internal-sftp
     AllowTcpForwarding no
     ForceCommand internal-sftp
 
-    Match User <%= stp_site[:upload][:user] %>
-    ChrootDirectory <%= chroot_dir %>
-    X11Forwarding no
-    AllowTcpForwarding no
-    ForceCommand internal-sftp
+    <% stp_site[:upload].each do |user| %>
+        Match User <%= user[:user] %>
+        ChrootDirectory <%= chroot_dir %>
+        X11Forwarding no
+        AllowTcpForwarding no
+        ForceCommand internal-sftp
+
+    <% end %>
 
 <% end %>
