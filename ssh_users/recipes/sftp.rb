@@ -16,13 +16,16 @@ execute "create sftp base dir #{sftp_base_dir}" do
   action :run
 end
 
+user_group = 'sftpers'
+execute "create group if not exists" do
+  command "getent group #{user_group} || groupadd #{user_group}"
+  action :run
+end
+
 node[:sftp_sites].each do |sftp_site|
-  execute "add user #{sftp_site[:upload][:user]}" do
-    command "sudo adduser #{sftp_site[:upload][:user]}"
-    action :run
-  end
+
   execute "add user #{sftp_site[:download][:user]}" do
-    command "sudo adduser #{sftp_site[:download][:user]}"
+    command "sudo adduser #{sftp_site[:download][:user]} -g #{user_group}"
     action :run
   end
 
@@ -31,15 +34,9 @@ node[:sftp_sites].each do |sftp_site|
     action :run
   end
 
-  execute "add .ssh dir for user #{sftp_site[:upload][:user]}" do
-    command "sudo su - #{sftp_site[:upload][:user]} -c \"mkdir .ssh\""
-    action :run
-  end
 
-  execute "chmod .ssh dir for user #{sftp_site[:upload][:user]}" do
-    command "sudo su - #{sftp_site[:upload][:user]} -c \"chmod 700 .ssh\""
-    action :run
-  end
+
+
 
   execute "chmod .ssh dir for user #{sftp_site[:download][:user]}" do
     command "sudo su - #{sftp_site[:download][:user]} -c \"chmod 700 .ssh\""
@@ -55,14 +52,7 @@ node[:sftp_sites].each do |sftp_site|
     mode 0600
   end
 
-  template "/home/#{sftp_site[:upload][:user]}/.ssh/authorized_keys" do
-    backup false
-    source 'authorized_keys.erb'
-    owner sftp_site[:upload][:user]
-    group sftp_site[:upload][:user]
-    variables :public_key => sftp_site[:upload][:public_key]
-    mode 0600
-  end
+
 
   base_repo = File.join(sftp_base_dir, sftp_site[:home])
   execute "create sftp repo #{base_repo}" do
@@ -79,7 +69,7 @@ node[:sftp_sites].each do |sftp_site|
   end
 
   execute "chown #{download_dir}" do
-    command "sudo chown #{sftp_site[:download][:user]}:#{sftp_site[:upload][:user]} #{download_dir}"
+    command "sudo chown #{sftp_site[:download][:user]}:#{user_group} #{download_dir}"
     action :run
   end
 
@@ -96,17 +86,37 @@ node[:sftp_sites].each do |sftp_site|
     action :run
   end
 
-  execute "chown #{upload_dir}" do
-    command "sudo chown #{sftp_site[:upload][:user]}:#{sftp_site[:download][:user]} #{upload_dir}"
-    action :run
-  end
-
   execute "chmod #{upload_dir}" do
     command "sudo chmod #{node[:sftp_permission]} -R #{upload_dir}"
     action :run
   end
 
-
+  sftp_site[:upload].each do |user|
+    execute "add user #{user[:user]}" do
+      command "sudo adduser #{user[:user]} -g #{user_group}"
+      action :run
+    end
+    execute "add .ssh dir for user #{sftp_site[:upload][:user]}" do
+      command "sudo su - #{sftp_site[:upload][:user]} -c \"mkdir .ssh\""
+      action :run
+    end
+    execute "chmod .ssh dir for user #{sftp_site[:upload][:user]}" do
+      command "sudo su - #{sftp_site[:upload][:user]} -c \"chmod 700 .ssh\""
+      action :run
+    end
+    template "/home/#{sftp_site[:upload][:user]}/.ssh/authorized_keys" do
+      backup false
+      source 'authorized_keys.erb'
+      owner sftp_site[:upload][:user]
+      group sftp_site[:upload][:user]
+      variables :public_key => sftp_site[:upload][:public_key]
+      mode 0600
+    end
+    execute "chown #{upload_dir}" do
+      command "sudo chown #{sftp_site[:download][:user]}:#{user_group} #{upload_dir}"
+      action :run
+    end
+  end
 
 end
 
