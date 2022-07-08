@@ -103,11 +103,8 @@ Rails.application.configure do
   config.active_job.queue_adapter = :resque
   <% end %>
 
-
-
-
-
-
-
-
+  <% if @hurricane_print_env == 'staging' %>
+    config.action_mailer.show_previews = true
+    config.action_mailer.preview_path = "#{Rails.root}/spec/mailers/previews"
+  <% end %>
 end
