@@ -36,11 +36,18 @@ else
     action :nothing
   end
 
-  opsworks_commons_assets_installer "Install user space OpsWorks ruby package" do
-    asset package_name
-    version node[:ruby][:version]
-    release node[:ruby][:pkgrelease]
+  # BAH! passiamo ad usare4 yum che sto coso non va manco a pagare
+  # opsworks_commons_assets_installer "Install user space OpsWorks ruby package" do
+  #   asset package_name
+  #   version node[:ruby][:version]
+  #   release node[:ruby][:pkgrelease]
 
+  #   notifies :write, "log[downloading]", :immediately
+  #   action :install
+  # end
+
+  # easier
+  yum_package node[:ruby][:yum_version] do
     notifies :write, "log[downloading]", :immediately
     action :install
   end
