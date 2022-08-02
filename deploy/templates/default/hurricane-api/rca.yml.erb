@@ -1,0 +1,16 @@
+default: &default
+  offers_search:
+    companies_enabled:
+      <% if @companies_enabled.empty? %>
+      []
+      <% else %>
+        <% @companies_enabled.each do |insurance_company| %>
+      - <%= insurance_company %>
+        <% end %>
+      <% end %>
+
+<%= @env %>:
+  <<: *default
+
+test:
+  <<: *default
